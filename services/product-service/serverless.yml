@@ -7,80 +7,43 @@ provider:
   runtime: python3.9
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-1'}
+  tags:
+    Project: gamarriando
+    Environment: ${self:provider.stage}
+    Service: product-service
+    ManagedBy: serverless
   environment:
     STAGE: ${self:provider.stage}
-    # Database Configuration (configurable via environment variables)
-    DATABASE_URL: ${env:DATABASE_URL, 'sqlite:///./gamarriando.db'}
-    DB_HOST: ${env:DB_HOST, 'localhost'}
+    # Database Configuration for RDS Aurora
+    DATABASE_URL: ${env:DATABASE_URL, ''}
+    DB_HOST: ${env:DB_HOST, ''}
     DB_PORT: ${env:DB_PORT, '5432'}
     DB_NAME: ${env:DB_NAME, 'gamarriando'}
     DB_USER: ${env:DB_USER, 'gamarriando'}
-    DB_PASSWORD: ${env:DB_PASSWORD, 'gamarriando123'}
+    DB_PASSWORD: ${env:DB_PASSWORD, 'Gamarriando2024!'}
+    DB_POOL_SIZE: ${env:DB_POOL_SIZE, '5'}
+    DB_MAX_OVERFLOW: ${env:DB_MAX_OVERFLOW, '10'}
+    DB_POOL_RECYCLE: ${env:DB_POOL_RECYCLE, '3600'}
     # JWT Configuration
     JWT_SECRET_KEY: ${env:JWT_SECRET_KEY, 'gamarriando-super-secret-jwt-key-dev'}
     JWT_ALGORITHM: ${env:JWT_ALGORITHM, 'HS256'}
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: ${env:JWT_ACCESS_TOKEN_EXPIRE_MINUTES, 30}
     # S3 Configuration
-    S3_BUCKET_NAME: ${env:S3_BUCKET_NAME, 'gamarriando-product-images-dev'}
+    S3_BUCKET_NAME: ${env:S3_BUCKET_NAME, 'gamarriando-product-images-${self:provider.stage}'}
     S3_REGION: ${env:S3_REGION, 'us-east-1'}
     # Application Settings
     DEBUG: ${env:DEBUG, 'false'}
     LOG_LEVEL: ${env:LOG_LEVEL, 'INFO'}
-  # Use existing LabRole for AWS Educate
-  role: arn:aws:iam::238034776414:role/LabRole
+  role: arn:aws:iam::331005567943:role/GamarriandoLambdaRole
+  # VPC Configuration for RDS access
+  vpc:
+    securityGroupIds:
+      - sg-0b7776e36a7150695  # Lambda Security Group
+    subnetIds:
+      - subnet-0d8b3798c4f2897be  # us-east-1a
+      - subnet-0f56032e6c45bd02d  # us-east-1b
 
 functions:
-  # Products Functions
-  products_list:
-    handler: handlers/products_list.lambda_handler
-    timeout: 20
-    memorySize: 256
-    events:
-      - http:
-          path: /api/v1/products
-          method: GET
-          cors: true
-
-  products_create:
-    handler: handlers/products_create.lambda_handler
-    timeout: 30
-    memorySize: 512
-    events:
-      - http:
-          path: /api/v1/products
-          method: POST
-          cors: true
-
-  products_get:
-    handler: handlers/products_get.lambda_handler
-    timeout: 20
-    memorySize: 256
-    events:
-      - http:
-          path: /api/v1/products/{product_id}
-          method: GET
-          cors: true
-
-  products_update:
-    handler: handlers/products_update.lambda_handler
-    timeout: 30
-    memorySize: 512
-    events:
-      - http:
-          path: /api/v1/products/{product_id}
-          method: PUT
-          cors: true
-
-  products_delete:
-    handler: handlers/products_delete.lambda_handler
-    timeout: 20
-    memorySize: 256
-    events:
-      - http:
-          path: /api/v1/products/{product_id}
-          method: DELETE
-          cors: true
-
   # Categories Functions
   categories_list:
     handler: handlers/categories_list.lambda_handler
@@ -92,16 +55,6 @@ functions:
           method: GET
           cors: true
 
-  categories_create:
-    handler: handlers/categories_create.lambda_handler
-    timeout: 30
-    memorySize: 512
-    events:
-      - http:
-          path: /api/v1/categories
-          method: POST
-          cors: true
-
   categories_get:
     handler: handlers/categories_get.lambda_handler
     timeout: 20
@@ -110,6 +63,16 @@ functions:
       - http:
           path: /api/v1/categories/{category_id}
           method: GET
+          cors: true
+
+  categories_create:
+    handler: handlers/categories_create.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /api/v1/categories
+          method: POST
           cors: true
 
   categories_update:
@@ -143,16 +106,6 @@ functions:
           method: GET
           cors: true
 
-  vendors_create:
-    handler: handlers/vendors_create.lambda_handler
-    timeout: 30
-    memorySize: 512
-    events:
-      - http:
-          path: /api/v1/vendors
-          method: POST
-          cors: true
-
   vendors_get:
     handler: handlers/vendors_get.lambda_handler
     timeout: 20
@@ -161,6 +114,16 @@ functions:
       - http:
           path: /api/v1/vendors/{vendor_id}
           method: GET
+          cors: true
+
+  vendors_create:
+    handler: handlers/vendors_create.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /api/v1/vendors
+          method: POST
           cors: true
 
   vendors_update:
@@ -183,6 +146,57 @@ functions:
           method: DELETE
           cors: true
 
+  # Products Functions
+  products_list:
+    handler: handlers/products_list.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/products
+          method: GET
+          cors: true
+
+  products_get:
+    handler: handlers/products_get.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/products/{product_id}
+          method: GET
+          cors: true
+
+  products_create:
+    handler: handlers/products_create.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /api/v1/products
+          method: POST
+          cors: true
+
+  products_update:
+    handler: handlers/products_update.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /api/v1/products/{product_id}
+          method: PUT
+          cors: true
+
+  products_delete:
+    handler: handlers/products_delete.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/products/{product_id}
+          method: DELETE
+          cors: true
+
 plugins:
   - serverless-python-requirements
 
@@ -195,9 +209,14 @@ custom:
     noDeps:
       - boto3
       - botocore
+    layer:
+      name: gamarriando-product-service-deps
+      description: Dependencies for Gamarriando Product Service
+      compatibleRuntimes:
+        - python3.9
 
 resources:
-  # S3 Bucket for product images (optional, can be created separately)
+  # S3 Bucket for product images
   Resources:
     ProductImagesBucket:
       Type: AWS::S3::Bucket
@@ -219,6 +238,15 @@ resources:
           BlockPublicPolicy: false
           IgnorePublicAcls: false
           RestrictPublicBuckets: false
+        Tags:
+          - Key: Project
+            Value: gamarriando
+          - Key: Environment
+            Value: ${self:provider.stage}
+          - Key: Service
+            Value: product-service
+          - Key: ManagedBy
+            Value: serverless
 
   Outputs:
     ApiUrl:
@@ -241,25 +269,20 @@ resources:
       Export:
         Name: ${self:service}-${self:provider.stage}-productImagesBucket
     
-    LambdaFunctions:
-      Description: "List of deployed Lambda functions"
+    VPCConfiguration:
+      Description: "VPC Configuration for Lambda functions"
       Value:
         Fn::Join:
           - ", "
-          - - "products_list"
-            - "products_create"
-            - "products_get"
-            - "products_update"
-            - "products_delete"
-            - "categories_list"
-            - "categories_create"
-            - "categories_get"
-            - "categories_update"
-            - "categories_delete"
-            - "vendors_list"
-            - "vendors_create"
-            - "vendors_get"
-            - "vendors_update"
-            - "vendors_delete"
-      Export:
-        Name: ${self:service}-${self:provider.stage}-lambdaFunctions
+          - - "VPC: vpc-0247fc2c1890c7403"
+            - "Security Groups: sg-0b7776e36a7150695"
+            - "Subnets: subnet-0d8b3798c4f2897be, subnet-0f56032e6c45bd02d"
+    
+    DatabaseInfo:
+      Description: "RDS PostgreSQL Database Information"
+      Value:
+        Fn::Join:
+          - ", "
+          - - "Host: gamarriando-product-service-dev.cgb6u24c81zq.us-east-1.rds.amazonaws.com"
+            - "Database: gamarriando"
+            - "Port: 5432"
