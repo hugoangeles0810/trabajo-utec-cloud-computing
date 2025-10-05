@@ -4,54 +4,183 @@ frameworkVersion: '3'
 
 provider:
   name: aws
-  runtime: python3.11
+  runtime: python3.9
   stage: ${opt:stage, 'dev'}
   region: ${opt:region, 'us-east-1'}
   environment:
     STAGE: ${self:provider.stage}
-    DATABASE_URL: ${env:DATABASE_URL}
-    DB_HOST: ${env:DB_HOST}
+    # Database Configuration (configurable via environment variables)
+    DATABASE_URL: ${env:DATABASE_URL, 'sqlite:///./gamarriando.db'}
+    DB_HOST: ${env:DB_HOST, 'localhost'}
     DB_PORT: ${env:DB_PORT, '5432'}
     DB_NAME: ${env:DB_NAME, 'gamarriando'}
     DB_USER: ${env:DB_USER, 'gamarriando'}
-    DB_PASSWORD: ${env:DB_PASSWORD}
-    JWT_SECRET_KEY: ${env:JWT_SECRET_KEY}
+    DB_PASSWORD: ${env:DB_PASSWORD, 'gamarriando123'}
+    # JWT Configuration
+    JWT_SECRET_KEY: ${env:JWT_SECRET_KEY, 'gamarriando-super-secret-jwt-key-dev'}
     JWT_ALGORITHM: ${env:JWT_ALGORITHM, 'HS256'}
     JWT_ACCESS_TOKEN_EXPIRE_MINUTES: ${env:JWT_ACCESS_TOKEN_EXPIRE_MINUTES, 30}
+    # S3 Configuration
+    S3_BUCKET_NAME: ${env:S3_BUCKET_NAME, 'gamarriando-product-images-dev'}
+    S3_REGION: ${env:S3_REGION, 'us-east-1'}
+    # Application Settings
     DEBUG: ${env:DEBUG, 'false'}
     LOG_LEVEL: ${env:LOG_LEVEL, 'INFO'}
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - rds:*
-        - rds-data:*
-      Resource: "*"
-    - Effect: Allow
-      Action:
-        - s3:GetObject
-        - s3:PutObject
-        - s3:DeleteObject
-      Resource: "arn:aws:s3:::gamarriando-${self:provider.stage}-*/*"
+  # Use existing LabRole for AWS Educate
+  role: arn:aws:iam::238034776414:role/LabRole
 
 functions:
-  api:
-    handler: lambda_handler.lambda_handler
-    timeout: 30
-    memorySize: 512
-    vpc:
-      securityGroupIds:
-        - Ref: LambdaSecurityGroup
-      subnetIds:
-        - ${env:SUBNET_ID_1}
-        - ${env:SUBNET_ID_2}
+  # Products Functions
+  products_list:
+    handler: handlers/products_list.lambda_handler
+    timeout: 20
+    memorySize: 256
     events:
       - http:
-          path: /{proxy+}
-          method: ANY
+          path: /api/v1/products
+          method: GET
           cors: true
+
+  products_create:
+    handler: handlers/products_create.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
       - http:
-          path: /
-          method: ANY
+          path: /api/v1/products
+          method: POST
+          cors: true
+
+  products_get:
+    handler: handlers/products_get.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/products/{product_id}
+          method: GET
+          cors: true
+
+  products_update:
+    handler: handlers/products_update.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /api/v1/products/{product_id}
+          method: PUT
+          cors: true
+
+  products_delete:
+    handler: handlers/products_delete.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/products/{product_id}
+          method: DELETE
+          cors: true
+
+  # Categories Functions
+  categories_list:
+    handler: handlers/categories_list.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/categories
+          method: GET
+          cors: true
+
+  categories_create:
+    handler: handlers/categories_create.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /api/v1/categories
+          method: POST
+          cors: true
+
+  categories_get:
+    handler: handlers/categories_get.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/categories/{category_id}
+          method: GET
+          cors: true
+
+  categories_update:
+    handler: handlers/categories_update.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /api/v1/categories/{category_id}
+          method: PUT
+          cors: true
+
+  categories_delete:
+    handler: handlers/categories_delete.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/categories/{category_id}
+          method: DELETE
+          cors: true
+
+  # Vendors Functions
+  vendors_list:
+    handler: handlers/vendors_list.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/vendors
+          method: GET
+          cors: true
+
+  vendors_create:
+    handler: handlers/vendors_create.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /api/v1/vendors
+          method: POST
+          cors: true
+
+  vendors_get:
+    handler: handlers/vendors_get.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/vendors/{vendor_id}
+          method: GET
+          cors: true
+
+  vendors_update:
+    handler: handlers/vendors_update.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /api/v1/vendors/{vendor_id}
+          method: PUT
+          cors: true
+
+  vendors_delete:
+    handler: handlers/vendors_delete.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/vendors/{vendor_id}
+          method: DELETE
           cors: true
 
 plugins:
@@ -59,95 +188,78 @@ plugins:
 
 custom:
   pythonRequirements:
-    dockerizePip: true
+    dockerizePip: false
     slim: true
     strip: false
+    fileName: requirements.txt
     noDeps:
       - boto3
       - botocore
 
 resources:
+  # S3 Bucket for product images (optional, can be created separately)
   Resources:
-    # RDS Aurora PostgreSQL Cluster
-    AuroraCluster:
-      Type: AWS::RDS::DBCluster
+    ProductImagesBucket:
+      Type: AWS::S3::Bucket
       Properties:
-        DBClusterIdentifier: gamarriando-${self:provider.stage}-aurora-cluster
-        Engine: aurora-postgresql
-        EngineVersion: '15.4'
-        MasterUsername: ${env:DB_MASTER_USERNAME, 'gamarriando'}
-        MasterUserPassword: ${env:DB_MASTER_PASSWORD}
-        DatabaseName: ${env:DB_NAME, 'gamarriando'}
-        BackupRetentionPeriod: 7
-        PreferredBackupWindow: '03:00-04:00'
-        PreferredMaintenanceWindow: 'sun:04:00-sun:05:00'
-        VpcSecurityGroupIds:
-          - Ref: AuroraSecurityGroup
-        DBSubnetGroupName:
-          Ref: AuroraSubnetGroup
-        StorageEncrypted: true
-        DeletionProtection: false
-        EnableCloudwatchLogsExports:
-          - postgresql
-
-    # RDS Aurora PostgreSQL Instance
-    AuroraInstance:
-      Type: AWS::RDS::DBInstance
-      Properties:
-        DBInstanceIdentifier: gamarriando-${self:provider.stage}-aurora-instance
-        DBClusterIdentifier:
-          Ref: AuroraCluster
-        DBInstanceClass: ${env:DB_INSTANCE_CLASS, 'db.r6g.large'}
-        Engine: aurora-postgresql
-        PubliclyAccessible: false
-
-    # Security Group for Aurora
-    AuroraSecurityGroup:
-      Type: AWS::EC2::SecurityGroup
-      Properties:
-        GroupDescription: Security group for Aurora PostgreSQL
-        VpcId: ${env:VPC_ID}
-        SecurityGroupIngress:
-          - IpProtocol: tcp
-            FromPort: 5432
-            ToPort: 5432
-            SourceSecurityGroupId:
-              Ref: LambdaSecurityGroup
-
-    # Security Group for Lambda
-    LambdaSecurityGroup:
-      Type: AWS::EC2::SecurityGroup
-      Properties:
-        GroupDescription: Security group for Lambda functions
-        VpcId: ${env:VPC_ID}
-
-    # DB Subnet Group
-    AuroraSubnetGroup:
-      Type: AWS::RDS::DBSubnetGroup
-      Properties:
-        DBSubnetGroupDescription: Subnet group for Aurora PostgreSQL
-        SubnetIds:
-          - ${env:SUBNET_ID_1}
-          - ${env:SUBNET_ID_2}
-        Tags:
-          - Key: Name
-            Value: gamarriando-${self:provider.stage}-aurora-subnet-group
+        BucketName: gamarriando-product-images-${self:provider.stage}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders:
+                - "*"
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+              AllowedOrigins:
+                - "*"
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          BlockPublicPolicy: false
+          IgnorePublicAcls: false
+          RestrictPublicBuckets: false
 
   Outputs:
-    AuroraClusterEndpoint:
-      Description: Aurora PostgreSQL Cluster Endpoint
+    ApiUrl:
+      Description: "API Gateway endpoint URL for Gamarriando Product Service"
       Value:
-        Fn::GetAtt:
-          - AuroraCluster
-          - Endpoint.Address
+        Fn::Join:
+          - ""
+          - - "https://"
+            - Ref: ApiGatewayRestApi
+            - ".execute-api."
+            - ${self:provider.region}
+            - ".amazonaws.com/"
+            - ${self:provider.stage}
       Export:
-        Name: ${self:provider.stage}-AuroraClusterEndpoint
+        Name: ${self:service}-${self:provider.stage}-apiUrl
     
-    AuroraClusterPort:
-      Description: Aurora PostgreSQL Cluster Port
+    ProductImagesBucketName:
       Value:
-        Fn::GetAtt:
-          - AuroraCluster
-          - Endpoint.Port
+        Ref: ProductImagesBucket
       Export:
-        Name: ${self:provider.stage}-AuroraClusterPort
+        Name: ${self:service}-${self:provider.stage}-productImagesBucket
+    
+    LambdaFunctions:
+      Description: "List of deployed Lambda functions"
+      Value:
+        Fn::Join:
+          - ", "
+          - - "products_list"
+            - "products_create"
+            - "products_get"
+            - "products_update"
+            - "products_delete"
+            - "categories_list"
+            - "categories_create"
+            - "categories_get"
+            - "categories_update"
+            - "categories_delete"
+            - "vendors_list"
+            - "vendors_create"
+            - "vendors_get"
+            - "vendors_update"
+            - "vendors_delete"
+      Export:
+        Name: ${self:service}-${self:provider.stage}-lambdaFunctions

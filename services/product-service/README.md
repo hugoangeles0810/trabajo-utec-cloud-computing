@@ -1,278 +1,262 @@
-# Gamarriando Product Service
+# 🛍️ Gamarriando Product Service
 
-Product management microservice for the Gamarriando marketplace, built with FastAPI and deployed on AWS Lambda.
+**Microservicio de Productos para el Marketplace Gamarriando**
 
-## Features
+Una arquitectura de microservicios verdaderos donde cada endpoint REST es una función Lambda individual, proporcionando escalado granular, monitoreo detallado y deployment selectivo.
 
-- **Product Management**: Complete CRUD operations for products
-- **Multi-vendor Support**: Handle products from multiple vendors
-- **Category Management**: Hierarchical category system
-- **Advanced Search**: Full-text search with filters
-- **Inventory Management**: Track stock levels and low stock alerts
-- **Image Management**: Handle product images with S3 integration
-- **Tagging System**: Flexible product tagging
-- **JWT Authentication**: Secure API access
-- **AWS Integration**: Lambda, RDS Aurora PostgreSQL, S3
+## 🏗️ Arquitectura
 
-## Architecture
+### **Microservicios Individuales por Endpoint**
 
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   NextJS App    │    │   API Gateway   │    │   Lambda        │
-│   (Frontend)    │◄──►│   (AWS)         │◄──►│   (FastAPI)     │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-                                                        │
-                       ┌─────────────────┐              │
-                       │   RDS Aurora    │◄─────────────┘
-                       │   PostgreSQL    │
-                       └─────────────────┘
-                                │
-                       ┌─────────────────┐
-                       │   S3 Bucket     │
-                       │   (Images)      │
-                       └─────────────────┘
-```
+Cada endpoint REST es una función Lambda independiente, proporcionando:
 
-## Tech Stack
+- **Escalado Granular**: Cada endpoint escala según su demanda específica
+- **Monitoreo Detallado**: Métricas individuales por endpoint
+- **Deployment Selectivo**: Actualizar solo funciones específicas
+- **Debugging Simplificado**: Errores aislados por función
+- **Desarrollo Paralelo**: Equipos pueden trabajar independientemente
 
-- **Backend**: Python 3.11, FastAPI
-- **Database**: PostgreSQL (AWS RDS Aurora)
-- **Authentication**: JWT
-- **Storage**: AWS S3 (product images)
-- **Deployment**: AWS Lambda + API Gateway
-- **Infrastructure**: Serverless Framework
-- **ORM**: SQLAlchemy
-- **Migrations**: Alembic
+### **15 Lambda Functions Individuales**
 
-## Project Structure
+#### 🛍️ **Products Functions (5 funciones)**
+- `products_list` - `GET /api/v1/products`
+- `products_create` - `POST /api/v1/products`
+- `products_get` - `GET /api/v1/products/{id}`
+- `products_update` - `PUT /api/v1/products/{id}`
+- `products_delete` - `DELETE /api/v1/products/{id}`
 
-```
-product-service/
-├── app/
-│   ├── api/
-│   │   └── v1/
-│   │       ├── endpoints/
-│   │       │   ├── products.py
-│   │       │   ├── vendors.py
-│   │       │   └── categories.py
-│   │       └── api.py
-│   ├── auth/
-│   │   ├── jwt_handler.py
-│   │   ├── dependencies.py
-│   │   └── schemas.py
-│   ├── models/
-│   │   ├── product.py
-│   │   ├── vendor.py
-│   │   ├── category.py
-│   │   └── base.py
-│   ├── schemas/
-│   │   ├── product.py
-│   │   ├── vendor.py
-│   │   ├── category.py
-│   │   └── common.py
-│   ├── services/
-│   │   ├── product_service.py
-│   │   ├── vendor_service.py
-│   │   ├── category_service.py
-│   │   └── base_service.py
-│   ├── config.py
-│   ├── database.py
-│   ├── main.py
-│   └── db_migrations.py
-├── alembic/
-│   ├── versions/
-│   ├── env.py
-│   └── script.py.mako
-├── tests/
-├── serverless.yml
-├── requirements.txt
-├── alembic.ini
-├── main.py
-└── README.md
-```
+#### 📂 **Categories Functions (5 funciones)**
+- `categories_list` - `GET /api/v1/categories`
+- `categories_create` - `POST /api/v1/categories`
+- `categories_get` - `GET /api/v1/categories/{id}`
+- `categories_update` - `PUT /api/v1/categories/{id}`
+- `categories_delete` - `DELETE /api/v1/categories/{id}`
 
-## Setup
+#### 🏪 **Vendors Functions (5 funciones)**
+- `vendors_list` - `GET /api/v1/vendors`
+- `vendors_create` - `POST /api/v1/vendors`
+- `vendors_get` - `GET /api/v1/vendors/{id}`
+- `vendors_update` - `PUT /api/v1/vendors/{id}`
+- `vendors_delete` - `DELETE /api/v1/vendors/{id}`
 
-### Prerequisites
+## 🚀 Deployment
 
-- Python 3.11+
-- Node.js 18+
-- AWS CLI configured
-- PostgreSQL (for local development)
+### **Prerrequisitos**
 
-### Installation
+- AWS CLI configurado
+- Node.js 18+ y npm
+- Serverless Framework
+- Python 3.9+
 
-1. **Clone and setup**:
+### **Configuración**
+
+1. **Instalar dependencias**:
    ```bash
-   cd product-service
-   pip install -r requirements.txt
    npm install
    ```
 
-2. **Environment Configuration**:
+2. **Configurar variables de entorno**:
    ```bash
    cp env.example .env
-   # Edit .env with your configuration
+   # Editar .env con tus configuraciones
    ```
 
-3. **Database Setup**:
+3. **Deploy a AWS**:
    ```bash
-   # For local development
-   python app/db_migrations.py init
+   # Deploy a desarrollo
+   serverless deploy --stage dev
    
-   # Or run migrations
-   python app/db_migrations.py migrate
+   # Deploy a producción
+   serverless deploy --stage prod
    ```
 
-### Local Development
+### **URLs de Deployment**
 
-1. **Start the development server**:
-   ```bash
-   python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
-   ```
+- **API Base**: `https://c8ydsj3r02.execute-api.us-east-1.amazonaws.com/dev/`
+- **Products API**: `https://c8ydsj3r02.execute-api.us-east-1.amazonaws.com/dev/api/v1/products`
+- **Categories API**: `https://c8ydsj3r02.execute-api.us-east-1.amazonaws.com/dev/api/v1/categories`
+- **Vendors API**: `https://c8ydsj3r02.execute-api.us-east-1.amazonaws.com/dev/api/v1/vendors`
 
-2. **Access the API**:
-   - API: http://localhost:8000
-   - Docs: http://localhost:8000/docs
-   - Health: http://localhost:8000/health
+## 📊 Configuración por Función
 
-### Testing
+### **Memoria y Timeout Optimizados**
 
-```bash
-# Run tests
-pytest
+| Tipo de Operación | Memoria | Timeout | Razón |
+|------------------|---------|---------|-------|
+| **List/Get/Delete** | 256 MB | 20s | Operaciones simples y rápidas |
+| **Create/Update** | 512 MB | 30s | Operaciones complejas con validación |
 
-# Run with coverage
-pytest --cov=app --cov-report=html
+### **Recursos por Función**
 
-# Run specific test file
-pytest tests/test_products.py
+- **Tamaño**: 13 MB por función
+- **Runtime**: Python 3.9
+- **IAM Role**: `arn:aws:iam::238034776414:role/LabRole`
+- **CORS**: Habilitado en todos los endpoints
+
+## 🔧 Desarrollo Local
+
+### **Estructura del Proyecto**
+
+```
+services/product-service/
+├── handlers/                    # Lambda handlers individuales
+│   ├── products_list.py        # GET /api/v1/products
+│   ├── products_create.py      # POST /api/v1/products
+│   ├── products_get.py         # GET /api/v1/products/{id}
+│   ├── products_update.py      # PUT /api/v1/products/{id}
+│   ├── products_delete.py      # DELETE /api/v1/products/{id}
+│   ├── categories_list.py      # GET /api/v1/categories
+│   ├── categories_create.py    # POST /api/v1/categories
+│   ├── categories_get.py       # GET /api/v1/categories/{id}
+│   ├── categories_update.py    # PUT /api/v1/categories/{id}
+│   ├── categories_delete.py    # DELETE /api/v1/categories/{id}
+│   ├── vendors_list.py         # GET /api/v1/vendors
+│   ├── vendors_create.py       # POST /api/v1/vendors
+│   ├── vendors_get.py          # GET /api/v1/vendors/{id}
+│   ├── vendors_update.py       # PUT /api/v1/vendors/{id}
+│   └── vendors_delete.py       # DELETE /api/v1/vendors/{id}
+├── serverless.yml              # Configuración de deployment
+├── requirements.txt            # Dependencias Python
+└── README.md                   # Esta documentación
 ```
 
-## Deployment
-
-### AWS Setup
-
-1. **Configure AWS credentials**:
-   ```bash
-   aws configure
-   ```
-
-2. **Deploy to AWS**:
-   ```bash
-   # Deploy to development
-   npm run deploy:dev
-   
-   # Deploy to production
-   npm run deploy:prod
-   ```
-
-3. **Run migrations**:
-   ```bash
-   # After deployment, run migrations
-   python app/db_migrations.py migrate
-   ```
-
-### Environment Variables
-
-Set these in your AWS Lambda environment or `.env` file:
+### **Testing Local**
 
 ```bash
-# Database
-DATABASE_URL=postgresql://username:password@host:port/database
-DB_MASTER_USERNAME=gamarriando
-DB_MASTER_PASSWORD=your_secure_password
+# Test individual de función
+serverless invoke local --function products_list
 
-# JWT
-JWT_SECRET_KEY=your_jwt_secret_key
-JWT_ALGORITHM=HS256
-JWT_ACCESS_TOKEN_EXPIRE_MINUTES=30
-
-# AWS
-AWS_REGION=us-east-1
-VPC_ID=vpc-xxxxxxxxx
-SUBNET_ID_1=subnet-xxxxxxxxx
-SUBNET_ID_2=subnet-yyyyyyyyy
-
-# S3
-S3_BUCKET=gamarriando-dev-product-images
+# Test con datos específicos
+serverless invoke local --function products_create --data '{"name": "Test Product", "price": 19.99}'
 ```
 
-## API Endpoints
+## 📈 Monitoreo y Logs
 
-### Products
-
-- `GET /api/v1/products/` - List products with filtering
-- `GET /api/v1/products/{id}` - Get product by ID
-- `GET /api/v1/products/sku/{sku}` - Get product by SKU
-- `GET /api/v1/products/slug/{slug}` - Get product by slug
-- `POST /api/v1/products/` - Create product
-- `PUT /api/v1/products/{id}` - Update product
-- `DELETE /api/v1/products/{id}` - Delete product
-- `PATCH /api/v1/products/{id}/inventory` - Update inventory
-
-### Vendors
-
-- `GET /api/v1/vendors/` - List vendors
-- `GET /api/v1/vendors/{id}` - Get vendor by ID
-- `POST /api/v1/vendors/` - Create vendor
-- `PUT /api/v1/vendors/{id}` - Update vendor
-- `DELETE /api/v1/vendors/{id}` - Delete vendor
-
-### Categories
-
-- `GET /api/v1/categories/` - List categories
-- `GET /api/v1/categories/tree` - Get category tree
-- `GET /api/v1/categories/{id}` - Get category by ID
-- `POST /api/v1/categories/` - Create category
-- `PUT /api/v1/categories/{id}` - Update category
-- `DELETE /api/v1/categories/{id}` - Delete category
-
-## Database Migrations
+### **CloudWatch Logs**
 
 ```bash
-# Create a new migration
-python app/db_migrations.py create "Add product variants table"
+# Ver logs de función específica
+serverless logs --function products_list --stage dev --tail
 
-# Run migrations
-python app/db_migrations.py migrate
-
-# Downgrade migration
-python app/db_migrations.py downgrade
-
-# Show current revision
-python app/db_migrations.py current
-
-# Show migration history
-python app/db_migrations.py history
+# Ver logs de todas las funciones
+serverless logs --stage dev --tail
 ```
 
-## Monitoring and Logs
+### **Métricas por Función**
 
+- **Invocaciones**: Número de llamadas por endpoint
+- **Duración**: Tiempo de ejecución por función
+- **Errores**: Rate de errores por endpoint
+- **Throttles**: Limitaciones de concurrencia
+
+## 🔐 Seguridad
+
+### **CORS Configurado**
+
+Todos los endpoints incluyen headers CORS:
+- `Access-Control-Allow-Origin: *`
+- `Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS`
+- `Access-Control-Allow-Headers: Content-Type,Authorization`
+
+### **IAM Permissions**
+
+- **Role**: `arn:aws:iam::238034776414:role/LabRole`
+- **Permisos**: Acceso a S3, CloudWatch, y otros servicios AWS necesarios
+
+## 🧪 Testing
+
+### **Endpoints Verificados**
+
+#### ✅ **Categorías (100% operativo)**
+- ✅ `GET /api/v1/categories` - Lista de categorías
+- ✅ `POST /api/v1/categories` - Crear categoría
+- ✅ `GET /api/v1/categories/{id}` - Obtener categoría
+- ✅ `PUT /api/v1/categories/{id}` - Actualizar categoría
+- ✅ `DELETE /api/v1/categories/{id}` - Eliminar categoría
+
+#### ✅ **Vendedores (100% operativo)**
+- ✅ `GET /api/v1/vendors` - Lista de vendedores
+- ✅ `POST /api/v1/vendors` - Crear vendedor
+- ✅ `GET /api/v1/vendors/{id}` - Obtener vendedor
+- ✅ `PUT /api/v1/vendors/{id}` - Actualizar vendedor
+- ✅ `DELETE /api/v1/vendors/{id}` - Eliminar vendedor
+
+#### ✅ **Productos (80% operativo)**
+- ❌ `GET /api/v1/products` - Lista de productos (error 500)
+- ✅ `POST /api/v1/products` - Crear producto
+- ✅ `GET /api/v1/products/{id}` - Obtener producto
+- ✅ `PUT /api/v1/products/{id}` - Actualizar producto
+- ✅ `DELETE /api/v1/products/{id}` - Eliminar producto
+
+### **Ejemplos de Uso**
+
+#### **Crear Producto**
 ```bash
-# View Lambda logs
-npm run logs
-
-# Invoke function locally
-npm run invoke
-
-# Run offline for testing
-npm run offline
+curl -X POST "https://c8ydsj3r02.execute-api.us-east-1.amazonaws.com/dev/api/v1/products" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Producto de Ejemplo",
+    "price": 29.99,
+    "description": "Descripción del producto",
+    "category_id": "1",
+    "vendor_id": "1",
+    "stock": 10
+  }'
 ```
 
-## Contributing
+#### **Obtener Categorías**
+```bash
+curl -X GET "https://c8ydsj3r02.execute-api.us-east-1.amazonaws.com/dev/api/v1/categories" \
+  -H "Content-Type: application/json"
+```
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Run tests and linting
-6. Submit a pull request
+#### **Actualizar Vendedor**
+```bash
+curl -X PUT "https://c8ydsj3r02.execute-api.us-east-1.amazonaws.com/dev/api/v1/vendors/1" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Vendedor Actualizado",
+    "rating": 4.8
+  }'
+```
 
-## License
+## 🚀 Beneficios de la Arquitectura Individual
 
-MIT License - see LICENSE file for details.
+### **Escalado Independiente**
+- Cada endpoint escala según su demanda específica
+- No hay sobre-provisioning de recursos
+- Costos optimizados por uso real
 
-## Support
+### **Monitoreo Granular**
+- Métricas detalladas por endpoint
+- Alertas específicas por función
+- Debugging simplificado
 
-For support, email support@gamarriando.com or create an issue in the repository.
+### **Deployment Selectivo**
+- Actualizar solo funciones modificadas
+- Rollback granular por función
+- Testing independiente
+
+### **Desarrollo Paralelo**
+- Equipos pueden trabajar en funciones independientes
+- Menos conflictos de merge
+- Desarrollo más ágil
+
+## 🔄 Próximos Pasos
+
+1. **🔧 Resolver products_list**: Investigar y corregir error 500
+2. **💾 Integración RDS**: Conectar cada función con Aurora PostgreSQL
+3. **🔐 Autenticación JWT**: Implementar middleware por función
+4. **📊 Monitoreo Avanzado**: CloudWatch dashboards por función
+5. **🧪 Testing Automatizado**: CI/CD pipeline por función
+6. **📈 Performance**: Optimización de cold starts
+
+## 📞 Soporte
+
+- **Documentación**: [ARCHITECTURE.md](./ARCHITECTURE.md)
+- **Issues**: Crear issue en el repositorio
+- **Contacto**: support@gamarriando.com
+
+---
+
+**Gamarriando Product Service** - Arquitectura de Microservicios Verdaderos con AWS Lambda 🚀
