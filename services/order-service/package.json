@@ -1,0 +1,36 @@
+{
+  "name": "@gamarriando/order-service",
+  "version": "1.0.0",
+  "description": "Order management microservice for Gamarriando marketplace",
+  "main": "main.py",
+  "scripts": {
+    "dev": "python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8002",
+    "build": "echo 'Building order service...'",
+    "test": "pytest",
+    "lint": "flake8 app/",
+    "format": "black app/",
+    "deploy": "serverless deploy",
+    "deploy:dev": "serverless deploy --stage dev",
+    "deploy:prod": "serverless deploy --stage prod",
+    "migrate": "python app/db_migrations.py migrate",
+    "migrate:create": "python app/db_migrations.py create",
+    "migrate:reset": "python app/db_migrations.py reset"
+  },
+  "dependencies": {
+    "@gamarriando/shared-types": "workspace:*"
+  },
+  "devDependencies": {
+    "serverless": "^3.38.0",
+    "serverless-python-requirements": "^6.0.0"
+  },
+  "keywords": [
+    "order",
+    "ecommerce",
+    "microservice",
+    "fastapi",
+    "aws",
+    "lambda"
+  ],
+  "author": "Gamarriando Team",
+  "license": "MIT"
+}

@@ -1,0 +1,64 @@
+{
+  "name": "gamarriando",
+  "version": "1.0.0",
+  "description": "Gamarriando Marketplace - Monorepo containing frontend and microservices",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "shared/*"
+  ],
+  "scripts": {
+    "install:all": "npm install && npm run install:services && npm run install:frontend",
+    "install:services": "npm install --workspaces --include-workspace-root --workspace=services/*",
+    "install:frontend": "npm install --workspace=frontend",
+    "build:all": "npm run build:shared && npm run build:services && npm run build:frontend",
+    "build:shared": "echo 'Building shared packages...'",
+    "build:services": "npm run build --workspaces --include-workspace-root --workspace=services/*",
+    "build:frontend": "npm run build --workspace=frontend",
+    "test:all": "npm run test --workspaces --include-workspace-root",
+    "test:services": "npm run test --workspaces --include-workspace-root --workspace=services/*",
+    "test:frontend": "npm run test --workspace=frontend",
+    "lint:all": "npm run lint --workspaces --include-workspace-root",
+    "lint:services": "npm run lint --workspaces --include-workspace-root --workspace=services/*",
+    "lint:frontend": "npm run lint --workspace=frontend",
+    "format:all": "npm run format --workspaces --include-workspace-root",
+    "deploy:dev": "npm run deploy:dev --workspaces --include-workspace-root --workspace=services/*",
+    "deploy:prod": "npm run deploy:prod --workspaces --include-workspace-root --workspace=services/*",
+    "deploy:frontend": "npm run deploy --workspace=frontend",
+    "dev:services": "concurrently \"npm run dev --workspace=services/product-service\" \"npm run dev --workspace=services/user-service\" \"npm run dev --workspace=services/order-service\"",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "dev:all": "concurrently \"npm run dev:services\" \"npm run dev:frontend\"",
+    "clean": "npm run clean --workspaces --include-workspace-root",
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up",
+    "docker:down": "docker-compose down",
+    "migrate:all": "npm run migrate --workspaces --include-workspace-root --workspace=services/*",
+    "setup": "npm run install:all && npm run build:shared",
+    "health:check": "npm run health:check --workspaces --include-workspace-root --workspace=services/*"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "lerna": "^8.0.0",
+    "nx": "^17.0.0",
+    "@nx/js": "^17.0.0",
+    "@nx/node": "^17.0.0",
+    "@nx/next": "^17.0.0",
+    "@nx/workspace": "^17.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "keywords": [
+    "monorepo",
+    "microservices",
+    "ecommerce",
+    "marketplace",
+    "aws",
+    "lambda",
+    "nextjs",
+    "fastapi"
+  ],
+  "author": "Gamarriando Team",
+  "license": "MIT"
+}

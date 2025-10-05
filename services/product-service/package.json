@@ -1,0 +1,41 @@
+{
+  "name": "@gamarriando/product-service",
+  "version": "1.0.0",
+  "description": "Product management microservice for Gamarriando marketplace",
+  "main": "main.py",
+  "scripts": {
+    "dev": "python run_dev.py",
+    "dev:local": "python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8001",
+    "build": "echo 'Building product service...'",
+    "test": "pytest",
+    "test:lambda": "pytest tests/ -v --tb=short",
+    "lint": "flake8 app/",
+    "format": "black app/",
+    "deploy": "./scripts/deploy-lambda.sh",
+    "deploy:dev": "serverless deploy --stage dev",
+    "deploy:prod": "serverless deploy --stage prod",
+    "deploy:info": "serverless info",
+    "deploy:logs": "serverless logs -f api",
+    "deploy:remove": "serverless remove",
+    "migrate": "python app/db_migrations.py migrate",
+    "migrate:create": "python app/db_migrations.py create",
+    "migrate:reset": "python app/db_migrations.py reset",
+    "lambda:invoke": "serverless invoke -f api",
+    "lambda:invoke:local": "serverless invoke local -f api"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "serverless": "^3.38.0",
+    "serverless-python-requirements": "^6.0.0"
+  },
+  "keywords": [
+    "product",
+    "ecommerce",
+    "microservice",
+    "fastapi",
+    "aws",
+    "lambda"
+  ],
+  "author": "Gamarriando Team",
+  "license": "MIT"
+}

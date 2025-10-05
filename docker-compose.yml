@@ -1,0 +1,224 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: gamarriando-postgres
+    environment:
+      POSTGRES_DB: gamarriando
+      POSTGRES_USER: gamarriando
+      POSTGRES_PASSWORD: gamarriando123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gamarriando -d gamarriando"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis (for caching and session management)
+  redis:
+    image: redis:7-alpine
+    container_name: gamarriando-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Product Service
+  product-service:
+    build:
+      context: ./services/product-service
+      dockerfile: Dockerfile
+    container_name: gamarriando-product-service
+    environment:
+      DATABASE_URL: postgresql://gamarriando:gamarriando123@postgres:5432/gamarriando
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET_KEY: your-secret-key-here
+      JWT_ALGORITHM: HS256
+      JWT_ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      STAGE: dev
+      DEBUG: "true"
+      LOG_LEVEL: INFO
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./services/product-service/app:/app/app
+    command: ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+  # User Service
+  user-service:
+    build:
+      context: ./services/user-service
+      dockerfile: Dockerfile
+    container_name: gamarriando-user-service
+    environment:
+      DATABASE_URL: postgresql://gamarriando:gamarriando123@postgres:5432/gamarriando
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET_KEY: your-secret-key-here
+      JWT_ALGORITHM: HS256
+      JWT_ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      STAGE: dev
+      DEBUG: "true"
+      LOG_LEVEL: INFO
+    ports:
+      - "8001:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./services/user-service/app:/app/app
+    command: ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+  # Order Service
+  order-service:
+    build:
+      context: ./services/order-service
+      dockerfile: Dockerfile
+    container_name: gamarriando-order-service
+    environment:
+      DATABASE_URL: postgresql://gamarriando:gamarriando123@postgres:5432/gamarriando
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET_KEY: your-secret-key-here
+      JWT_ALGORITHM: HS256
+      JWT_ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      STAGE: dev
+      DEBUG: "true"
+      LOG_LEVEL: INFO
+    ports:
+      - "8002:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./services/order-service/app:/app/app
+    command: ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+  # Payment Service
+  payment-service:
+    build:
+      context: ./services/payment-service
+      dockerfile: Dockerfile
+    container_name: gamarriando-payment-service
+    environment:
+      DATABASE_URL: postgresql://gamarriando:gamarriando123@postgres:5432/gamarriando
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET_KEY: your-secret-key-here
+      JWT_ALGORITHM: HS256
+      JWT_ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      STRIPE_SECRET_KEY: your-stripe-secret-key
+      PAYPAL_CLIENT_ID: your-paypal-client-id
+      PAYPAL_CLIENT_SECRET: your-paypal-client-secret
+      STAGE: dev
+      DEBUG: "true"
+      LOG_LEVEL: INFO
+    ports:
+      - "8003:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./services/payment-service/app:/app/app
+    command: ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+  # Notification Service
+  notification-service:
+    build:
+      context: ./services/notification-service
+      dockerfile: Dockerfile
+    container_name: gamarriando-notification-service
+    environment:
+      DATABASE_URL: postgresql://gamarriando:gamarriando123@postgres:5432/gamarriando
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET_KEY: your-secret-key-here
+      JWT_ALGORITHM: HS256
+      JWT_ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      SENDGRID_API_KEY: your-sendgrid-api-key
+      TWILIO_ACCOUNT_SID: your-twilio-account-sid
+      TWILIO_AUTH_TOKEN: your-twilio-auth-token
+      STAGE: dev
+      DEBUG: "true"
+      LOG_LEVEL: INFO
+    ports:
+      - "8004:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./services/notification-service/app:/app/app
+    command: ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+  # Frontend (Next.js)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: gamarriando-frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+      NEXT_PUBLIC_PRODUCT_SERVICE_URL: http://localhost:8000
+      NEXT_PUBLIC_USER_SERVICE_URL: http://localhost:8001
+      NEXT_PUBLIC_ORDER_SERVICE_URL: http://localhost:8002
+      NEXT_PUBLIC_PAYMENT_SERVICE_URL: http://localhost:8003
+      NEXT_PUBLIC_NOTIFICATION_SERVICE_URL: http://localhost:8004
+      NODE_ENV: development
+    ports:
+      - "3000:3000"
+    depends_on:
+      - product-service
+      - user-service
+      - order-service
+      - payment-service
+      - notification-service
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: ["npm", "run", "dev"]
+
+  # Nginx (API Gateway)
+  nginx:
+    image: nginx:alpine
+    container_name: gamarriando-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./infrastructure/nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - product-service
+      - user-service
+      - order-service
+      - payment-service
+      - notification-service
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  postgres_data:
+  redis_data:

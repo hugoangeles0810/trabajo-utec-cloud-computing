@@ -1,0 +1,350 @@
+{
+  "version": 2,
+  "projects": {
+    "gamarriando-frontend": {
+      "root": "frontend",
+      "sourceRoot": "frontend/src",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nx/next:build",
+          "outputs": ["{options.outputPath}"],
+          "defaultConfiguration": "production",
+          "options": {
+            "outputPath": "dist/frontend"
+          },
+          "configurations": {
+            "development": {
+              "outputPath": "dist/frontend"
+            },
+            "production": {}
+          }
+        },
+        "serve": {
+          "executor": "@nx/next:server",
+          "defaultConfiguration": "development",
+          "options": {
+            "buildTarget": "gamarriando-frontend:build",
+            "dev": true
+          },
+          "configurations": {
+            "development": {
+              "buildTarget": "gamarriando-frontend:build:development",
+              "dev": true
+            },
+            "production": {
+              "buildTarget": "gamarriando-frontend:build:production",
+              "dev": false
+            }
+          }
+        },
+        "export": {
+          "executor": "@nx/next:export",
+          "options": {
+            "buildTarget": "gamarriando-frontend:build:production"
+          }
+        },
+        "test": {
+          "executor": "@nx/jest:jest",
+          "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+          "options": {
+            "jestConfig": "frontend/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "executor": "@nx/eslint:lint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["frontend/**/*.{ts,tsx,js,jsx}"]
+          }
+        }
+      },
+      "tags": ["type:app", "scope:frontend"]
+    },
+    "product-service": {
+      "root": "services/product-service",
+      "sourceRoot": "services/product-service/app",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nx/node:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/services/product-service",
+            "main": "services/product-service/main.py",
+            "tsConfig": "services/product-service/tsconfig.json"
+          }
+        },
+        "serve": {
+          "executor": "@nx/node:serve",
+          "options": {
+            "buildTarget": "product-service:build"
+          }
+        },
+        "test": {
+          "executor": "@nx/jest:jest",
+          "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+          "options": {
+            "jestConfig": "services/product-service/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "executor": "@nx/eslint:lint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["services/product-service/**/*.{ts,js}"]
+          }
+        },
+        "deploy": {
+          "executor": "@nx/run-commands:run-commands",
+          "options": {
+            "command": "cd services/product-service && npm run deploy"
+          }
+        }
+      },
+      "tags": ["type:app", "scope:services"]
+    },
+    "user-service": {
+      "root": "services/user-service",
+      "sourceRoot": "services/user-service/app",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nx/node:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/services/user-service",
+            "main": "services/user-service/main.py",
+            "tsConfig": "services/user-service/tsconfig.json"
+          }
+        },
+        "serve": {
+          "executor": "@nx/node:serve",
+          "options": {
+            "buildTarget": "user-service:build"
+          }
+        },
+        "test": {
+          "executor": "@nx/jest:jest",
+          "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+          "options": {
+            "jestConfig": "services/user-service/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "executor": "@nx/eslint:lint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["services/user-service/**/*.{ts,js}"]
+          }
+        },
+        "deploy": {
+          "executor": "@nx/run-commands:run-commands",
+          "options": {
+            "command": "cd services/user-service && npm run deploy"
+          }
+        }
+      },
+      "tags": ["type:app", "scope:services"]
+    },
+    "order-service": {
+      "root": "services/order-service",
+      "sourceRoot": "services/order-service/app",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nx/node:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/services/order-service",
+            "main": "services/order-service/main.py",
+            "tsConfig": "services/order-service/tsconfig.json"
+          }
+        },
+        "serve": {
+          "executor": "@nx/node:serve",
+          "options": {
+            "buildTarget": "order-service:build"
+          }
+        },
+        "test": {
+          "executor": "@nx/jest:jest",
+          "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+          "options": {
+            "jestConfig": "services/order-service/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "executor": "@nx/eslint:lint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["services/order-service/**/*.{ts,js}"]
+          }
+        },
+        "deploy": {
+          "executor": "@nx/run-commands:run-commands",
+          "options": {
+            "command": "cd services/order-service && npm run deploy"
+          }
+        }
+      },
+      "tags": ["type:app", "scope:services"]
+    },
+    "payment-service": {
+      "root": "services/payment-service",
+      "sourceRoot": "services/payment-service/app",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nx/node:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/services/payment-service",
+            "main": "services/payment-service/main.py",
+            "tsConfig": "services/payment-service/tsconfig.json"
+          }
+        },
+        "serve": {
+          "executor": "@nx/node:serve",
+          "options": {
+            "buildTarget": "payment-service:build"
+          }
+        },
+        "test": {
+          "executor": "@nx/jest:jest",
+          "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+          "options": {
+            "jestConfig": "services/payment-service/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "executor": "@nx/eslint:lint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["services/payment-service/**/*.{ts,js}"]
+          }
+        },
+        "deploy": {
+          "executor": "@nx/run-commands:run-commands",
+          "options": {
+            "command": "cd services/payment-service && npm run deploy"
+          }
+        }
+      },
+      "tags": ["type:app", "scope:services"]
+    },
+    "notification-service": {
+      "root": "services/notification-service",
+      "sourceRoot": "services/notification-service/app",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nx/node:build",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/services/notification-service",
+            "main": "services/notification-service/main.py",
+            "tsConfig": "services/notification-service/tsconfig.json"
+          }
+        },
+        "serve": {
+          "executor": "@nx/node:serve",
+          "options": {
+            "buildTarget": "notification-service:build"
+          }
+        },
+        "test": {
+          "executor": "@nx/jest:jest",
+          "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+          "options": {
+            "jestConfig": "services/notification-service/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "executor": "@nx/eslint:lint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["services/notification-service/**/*.{ts,js}"]
+          }
+        },
+        "deploy": {
+          "executor": "@nx/run-commands:run-commands",
+          "options": {
+            "command": "cd services/notification-service && npm run deploy"
+          }
+        }
+      },
+      "tags": ["type:app", "scope:services"]
+    },
+    "shared-types": {
+      "root": "shared/types",
+      "sourceRoot": "shared/types/src",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nx/js:tsc",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/shared/types",
+            "main": "shared/types/src/index.ts",
+            "tsConfig": "shared/types/tsconfig.json"
+          }
+        },
+        "test": {
+          "executor": "@nx/jest:jest",
+          "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+          "options": {
+            "jestConfig": "shared/types/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "executor": "@nx/eslint:lint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["shared/types/**/*.{ts,js}"]
+          }
+        }
+      },
+      "tags": ["type:lib", "scope:shared"]
+    },
+    "shared-utils": {
+      "root": "shared/utils",
+      "sourceRoot": "shared/utils/src",
+      "projectType": "library",
+      "targets": {
+        "build": {
+          "executor": "@nx/js:tsc",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/shared/utils",
+            "main": "shared/utils/src/index.ts",
+            "tsConfig": "shared/utils/tsconfig.json"
+          }
+        },
+        "test": {
+          "executor": "@nx/jest:jest",
+          "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+          "options": {
+            "jestConfig": "shared/utils/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "lint": {
+          "executor": "@nx/eslint:lint",
+          "outputs": ["{options.outputFile}"],
+          "options": {
+            "lintFilePatterns": ["shared/utils/**/*.{ts,js}"]
+          }
+        }
+      },
+      "tags": ["type:lib", "scope:shared"]
+    }
+  }
+}

@@ -1,0 +1,153 @@
+service: gamarriando-product-service
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.11
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  environment:
+    STAGE: ${self:provider.stage}
+    DATABASE_URL: ${env:DATABASE_URL}
+    DB_HOST: ${env:DB_HOST}
+    DB_PORT: ${env:DB_PORT, '5432'}
+    DB_NAME: ${env:DB_NAME, 'gamarriando'}
+    DB_USER: ${env:DB_USER, 'gamarriando'}
+    DB_PASSWORD: ${env:DB_PASSWORD}
+    JWT_SECRET_KEY: ${env:JWT_SECRET_KEY}
+    JWT_ALGORITHM: ${env:JWT_ALGORITHM, 'HS256'}
+    JWT_ACCESS_TOKEN_EXPIRE_MINUTES: ${env:JWT_ACCESS_TOKEN_EXPIRE_MINUTES, 30}
+    DEBUG: ${env:DEBUG, 'false'}
+    LOG_LEVEL: ${env:LOG_LEVEL, 'INFO'}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - rds:*
+        - rds-data:*
+      Resource: "*"
+    - Effect: Allow
+      Action:
+        - s3:GetObject
+        - s3:PutObject
+        - s3:DeleteObject
+      Resource: "arn:aws:s3:::gamarriando-${self:provider.stage}-*/*"
+
+functions:
+  api:
+    handler: lambda_handler.lambda_handler
+    timeout: 30
+    memorySize: 512
+    vpc:
+      securityGroupIds:
+        - Ref: LambdaSecurityGroup
+      subnetIds:
+        - ${env:SUBNET_ID_1}
+        - ${env:SUBNET_ID_2}
+    events:
+      - http:
+          path: /{proxy+}
+          method: ANY
+          cors: true
+      - http:
+          path: /
+          method: ANY
+          cors: true
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    slim: true
+    strip: false
+    noDeps:
+      - boto3
+      - botocore
+
+resources:
+  Resources:
+    # RDS Aurora PostgreSQL Cluster
+    AuroraCluster:
+      Type: AWS::RDS::DBCluster
+      Properties:
+        DBClusterIdentifier: gamarriando-${self:provider.stage}-aurora-cluster
+        Engine: aurora-postgresql
+        EngineVersion: '15.4'
+        MasterUsername: ${env:DB_MASTER_USERNAME, 'gamarriando'}
+        MasterUserPassword: ${env:DB_MASTER_PASSWORD}
+        DatabaseName: ${env:DB_NAME, 'gamarriando'}
+        BackupRetentionPeriod: 7
+        PreferredBackupWindow: '03:00-04:00'
+        PreferredMaintenanceWindow: 'sun:04:00-sun:05:00'
+        VpcSecurityGroupIds:
+          - Ref: AuroraSecurityGroup
+        DBSubnetGroupName:
+          Ref: AuroraSubnetGroup
+        StorageEncrypted: true
+        DeletionProtection: false
+        EnableCloudwatchLogsExports:
+          - postgresql
+
+    # RDS Aurora PostgreSQL Instance
+    AuroraInstance:
+      Type: AWS::RDS::DBInstance
+      Properties:
+        DBInstanceIdentifier: gamarriando-${self:provider.stage}-aurora-instance
+        DBClusterIdentifier:
+          Ref: AuroraCluster
+        DBInstanceClass: ${env:DB_INSTANCE_CLASS, 'db.r6g.large'}
+        Engine: aurora-postgresql
+        PubliclyAccessible: false
+
+    # Security Group for Aurora
+    AuroraSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: Security group for Aurora PostgreSQL
+        VpcId: ${env:VPC_ID}
+        SecurityGroupIngress:
+          - IpProtocol: tcp
+            FromPort: 5432
+            ToPort: 5432
+            SourceSecurityGroupId:
+              Ref: LambdaSecurityGroup
+
+    # Security Group for Lambda
+    LambdaSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: Security group for Lambda functions
+        VpcId: ${env:VPC_ID}
+
+    # DB Subnet Group
+    AuroraSubnetGroup:
+      Type: AWS::RDS::DBSubnetGroup
+      Properties:
+        DBSubnetGroupDescription: Subnet group for Aurora PostgreSQL
+        SubnetIds:
+          - ${env:SUBNET_ID_1}
+          - ${env:SUBNET_ID_2}
+        Tags:
+          - Key: Name
+            Value: gamarriando-${self:provider.stage}-aurora-subnet-group
+
+  Outputs:
+    AuroraClusterEndpoint:
+      Description: Aurora PostgreSQL Cluster Endpoint
+      Value:
+        Fn::GetAtt:
+          - AuroraCluster
+          - Endpoint.Address
+      Export:
+        Name: ${self:provider.stage}-AuroraClusterEndpoint
+    
+    AuroraClusterPort:
+      Description: Aurora PostgreSQL Cluster Port
+      Value:
+        Fn::GetAtt:
+          - AuroraCluster
+          - Endpoint.Port
+      Export:
+        Name: ${self:provider.stage}-AuroraClusterPort
