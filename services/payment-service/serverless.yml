@@ -1,0 +1,246 @@
+service: gamarriando-payment-service
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.9
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  tags:
+    Project: gamarriando
+    Environment: ${self:provider.stage}
+    Service: payment-service
+    ManagedBy: serverless
+  environment:
+    STAGE: ${self:provider.stage}
+    # Database Configuration (PostgreSQL with psycopg2) - Same as product-service
+    DB_HOST: ${env:DB_HOST, 'gamarriando-product-service-dev.cgb6u24c81zq.us-east-1.rds.amazonaws.com'}
+    DB_PORT: ${env:DB_PORT, '5432'}
+    DB_NAME: ${env:DB_NAME, 'gamarriando'}
+    DB_USER: ${env:DB_USER, 'gamarriando'}
+    DB_PASSWORD: ${env:DB_PASSWORD, 'Gamarriando2024!'}
+    DATABASE_URL: ${env:DATABASE_URL, 'postgresql://gamarriando:Gamarriando2024!@gamarriando-product-service-dev.cgb6u24c81zq.us-east-1.rds.amazonaws.com:5432/gamarriando'}
+    # Connection pool configuration
+    DB_POOL_SIZE: ${env:DB_POOL_SIZE, '5'}
+    DB_MAX_OVERFLOW: ${env:DB_MAX_OVERFLOW, '10'}
+    DB_POOL_RECYCLE: ${env:DB_POOL_RECYCLE, '3600'}
+    # Payment Gateway Configuration
+    STRIPE_SECRET_KEY: ${env:STRIPE_SECRET_KEY, ''}
+    STRIPE_PUBLISHABLE_KEY: ${env:STRIPE_PUBLISHABLE_KEY, ''}
+    PAYPAL_CLIENT_ID: ${env:PAYPAL_CLIENT_ID, ''}
+    PAYPAL_CLIENT_SECRET: ${env:PAYPAL_CLIENT_SECRET, ''}
+    PAYPAL_MODE: ${env:PAYPAL_MODE, 'sandbox'}
+    # Application Settings
+    DEBUG: ${env:DEBUG, 'false'}
+    LOG_LEVEL: ${env:LOG_LEVEL, 'INFO'}
+  role: arn:aws:iam::331005567943:role/GamarriandoLambdaRole
+  # VPC Configuration for RDS access - Same as product-service
+  vpc:
+    securityGroupIds:
+      - sg-0b7776e36a7150695  # Lambda Security Group
+    subnetIds:
+      - subnet-0d8b3798c4f2897be  # us-east-1a
+      - subnet-0f56032e6c45bd02d  # us-east-1b
+
+functions:
+  # Orders Lambda Functions
+  orders_create:
+    handler: handlers/orders_create.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /api/v1/orders
+          method: POST
+          cors: true
+
+  orders_get:
+    handler: handlers/orders_get.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/orders/{order_id}
+          method: GET
+          cors: true
+
+  orders_list:
+    handler: handlers/orders_list.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/orders
+          method: GET
+          cors: true
+
+  orders_update:
+    handler: handlers/orders_update.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /api/v1/orders/{order_id}
+          method: PUT
+          cors: true
+
+  orders_delete:
+    handler: handlers/orders_delete.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/orders/{order_id}
+          method: DELETE
+          cors: true
+
+  # Payments Lambda Functions
+  payments_create:
+    handler: handlers/payments_create.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /api/v1/payments
+          method: POST
+          cors: true
+
+  payments_get:
+    handler: handlers/payments_get.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/payments/{payment_id}
+          method: GET
+          cors: true
+
+  payments_list:
+    handler: handlers/payments_list.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/payments
+          method: GET
+          cors: true
+
+  payments_update:
+    handler: handlers/payments_update.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /api/v1/payments/{payment_id}
+          method: PUT
+          cors: true
+
+  payments_delete:
+    handler: handlers/payments_delete.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/payments/{payment_id}
+          method: DELETE
+          cors: true
+
+  payments_process:
+    handler: handlers/payments_process.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /api/v1/payments/{payment_id}/process
+          method: POST
+          cors: true
+
+  payments_refund:
+    handler: handlers/payments_refund.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /api/v1/payments/{payment_id}/refund
+          method: POST
+          cors: true
+
+  # Transactions Lambda Functions
+  transactions_create:
+    handler: handlers/transactions_create.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /api/v1/transactions
+          method: POST
+          cors: true
+
+  transactions_get:
+    handler: handlers/transactions_get.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/transactions/{transaction_id}
+          method: GET
+          cors: true
+
+  transactions_list:
+    handler: handlers/transactions_list.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/transactions
+          method: GET
+          cors: true
+
+# Using psycopg2 with Lambda Layer approach
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    slim: false
+    strip: false
+    fileName: requirements.txt
+    noDeps:
+      - boto3
+      - botocore
+
+resources:
+  Outputs:
+    ApiUrl:
+      Description: "API Gateway endpoint URL for Gamarriando Payment Service"
+      Value:
+        Fn::Join:
+          - ""
+          - - "https://"
+            - Ref: ApiGatewayRestApi
+            - ".execute-api."
+            - ${self:provider.region}
+            - ".amazonaws.com/"
+            - ${self:provider.stage}
+      Export:
+        Name: ${self:service}-${self:provider.stage}-apiUrl
+    
+    VPCConfiguration:
+      Description: "VPC Configuration for Lambda functions"
+      Value:
+        Fn::Join:
+          - ", "
+          - - "VPC: vpc-0247fc2c1890c7403"
+            - "Security Groups: sg-0b7776e36a7150695"
+            - "Subnets: subnet-0d8b3798c4f2897be, subnet-0f56032e6c45bd02d"
+    
+    DatabaseInfo:
+      Description: "RDS PostgreSQL Database Information"
+      Value:
+        Fn::Join:
+          - ", "
+          - - "Host: gamarriando-product-service-dev.cgb6u24c81zq.us-east-1.rds.amazonaws.com"
+            - "Database: gamarriando"
+            - "Port: 5432"

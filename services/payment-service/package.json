@@ -16,9 +16,7 @@
     "migrate:create": "python app/db_migrations.py create",
     "migrate:reset": "python app/db_migrations.py reset"
   },
-  "dependencies": {
-    "@gamarriando/shared-types": "workspace:*"
-  },
+  "dependencies": {},
   "devDependencies": {
     "serverless": "^3.38.0",
     "serverless-python-requirements": "^6.0.0"
