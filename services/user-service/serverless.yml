@@ -1,0 +1,323 @@
+service: gamarriando-user-service
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: python3.9
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  tags:
+    Project: gamarriando
+    Environment: ${self:provider.stage}
+    Service: user-service
+    ManagedBy: serverless
+  environment:
+    STAGE: ${self:provider.stage}
+    # Database Configuration (PostgreSQL with psycopg2) - Same as other services
+    DB_HOST: ${env:DB_HOST, 'gamarriando-product-service-dev.cgb6u24c81zq.us-east-1.rds.amazonaws.com'}
+    DB_PORT: ${env:DB_PORT, '5432'}
+    DB_NAME: ${env:DB_NAME, 'gamarriando'}
+    DB_USER: ${env:DB_USER, 'gamarriando'}
+    DB_PASSWORD: ${env:DB_PASSWORD, 'Gamarriando2024!'}
+    DATABASE_URL: ${env:DATABASE_URL, 'postgresql://gamarriando:Gamarriando2024!@gamarriando-product-service-dev.cgb6u24c81zq.us-east-1.rds.amazonaws.com:5432/gamarriando'}
+    # Connection pool configuration
+    DB_POOL_SIZE: ${env:DB_POOL_SIZE, '5'}
+    DB_MAX_OVERFLOW: ${env:DB_MAX_OVERFLOW, '10'}
+    DB_POOL_RECYCLE: ${env:DB_POOL_RECYCLE, '3600'}
+    # JWT Configuration
+    JWT_SECRET_KEY: ${env:JWT_SECRET_KEY, 'gamarriando-super-secret-jwt-key-dev'}
+    JWT_ALGORITHM: ${env:JWT_ALGORITHM, 'HS256'}
+    JWT_ACCESS_TOKEN_EXPIRE_MINUTES: ${env:JWT_ACCESS_TOKEN_EXPIRE_MINUTES, '15'}
+    JWT_REFRESH_TOKEN_EXPIRE_DAYS: ${env:JWT_REFRESH_TOKEN_EXPIRE_DAYS, '7'}
+    # Security Configuration
+    BCRYPT_ROUNDS: ${env:BCRYPT_ROUNDS, '12'}
+    PASSWORD_MIN_LENGTH: ${env:PASSWORD_MIN_LENGTH, '8'}
+    MAX_LOGIN_ATTEMPTS: ${env:MAX_LOGIN_ATTEMPTS, '5'}
+    ACCOUNT_LOCKOUT_DURATION_MINUTES: ${env:ACCOUNT_LOCKOUT_DURATION_MINUTES, '30'}
+    # Application Settings
+    DEBUG: ${env:DEBUG, 'false'}
+    LOG_LEVEL: ${env:LOG_LEVEL, 'INFO'}
+  role: arn:aws:iam::331005567943:role/GamarriandoLambdaRole
+  # VPC Configuration for RDS access - Same as other services
+  vpc:
+    securityGroupIds:
+      - sg-0b7776e36a7150695  # Lambda Security Group
+    subnetIds:
+      - subnet-0d8b3798c4f2897be  # us-east-1a
+      - subnet-0f56032e6c45bd02d  # us-east-1b
+
+# Using psycopg2 with Lambda Layer approach
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    slim: false
+    strip: false
+    fileName: requirements.txt
+    noDeps:
+      - boto3
+      - botocore
+
+functions:
+  # =============================================================================
+  # AUTHENTICATION FUNCTIONS (6 Lambda functions)
+  # =============================================================================
+  
+  auth_register:
+    handler: handlers/auth_register.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /api/v1/auth/register
+          method: POST
+          cors: true
+  
+  auth_login:
+    handler: handlers/auth_login.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /api/v1/auth/login
+          method: POST
+          cors: true
+  
+  auth_logout:
+    handler: handlers/auth_logout.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/auth/logout
+          method: POST
+          cors: true
+  
+  auth_refresh:
+    handler: handlers/auth_refresh.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/auth/refresh
+          method: POST
+          cors: true
+  
+  auth_forgot_password:
+    handler: handlers/auth_forgot_password.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /api/v1/auth/forgot-password
+          method: POST
+          cors: true
+  
+  auth_reset_password:
+    handler: handlers/auth_reset_password.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /api/v1/auth/reset-password
+          method: POST
+          cors: true
+  
+  # =============================================================================
+  # USER MANAGEMENT FUNCTIONS (8 Lambda functions)
+  # =============================================================================
+  
+  users_create:
+    handler: handlers/users_create.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /api/v1/users
+          method: POST
+          cors: true
+  
+  users_get:
+    handler: handlers/users_get.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/users/{user_id}
+          method: GET
+          cors: true
+  
+  users_list:
+    handler: handlers/users_list.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/users
+          method: GET
+          cors: true
+  
+  users_update:
+    handler: handlers/users_update.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /api/v1/users/{user_id}
+          method: PUT
+          cors: true
+  
+  users_delete:
+    handler: handlers/users_delete.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/users/{user_id}
+          method: DELETE
+          cors: true
+  
+  users_verify_email:
+    handler: handlers/users_verify_email.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /api/v1/users/{user_id}/verify-email
+          method: POST
+          cors: true
+  
+  users_change_password:
+    handler: handlers/users_change_password.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /api/v1/users/{user_id}/change-password
+          method: POST
+          cors: true
+  
+  users_get_profile:
+    handler: handlers/users_get_profile.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/users/me
+          method: GET
+          cors: true
+  
+  # =============================================================================
+  # ROLE MANAGEMENT FUNCTIONS (4 Lambda functions)
+  # =============================================================================
+  
+  roles_assign:
+    handler: handlers/roles_assign.lambda_handler
+    timeout: 30
+    memorySize: 512
+    events:
+      - http:
+          path: /api/v1/users/{user_id}/roles
+          method: POST
+          cors: true
+  
+  roles_remove:
+    handler: handlers/roles_remove.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/users/{user_id}/roles/{role_id}
+          method: DELETE
+          cors: true
+  
+  roles_list:
+    handler: handlers/roles_list.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/users/{user_id}/roles
+          method: GET
+          cors: true
+  
+  roles_list_all:
+    handler: handlers/roles_list_all.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/roles
+          method: GET
+          cors: true
+  
+  # =============================================================================
+  # SESSION MANAGEMENT FUNCTIONS (3 Lambda functions)
+  # =============================================================================
+  
+  sessions_list:
+    handler: handlers/sessions_list.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/users/{user_id}/sessions
+          method: GET
+          cors: true
+  
+  sessions_revoke:
+    handler: handlers/sessions_revoke.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/sessions/{session_id}
+          method: DELETE
+          cors: true
+  
+  sessions_revoke_all:
+    handler: handlers/sessions_revoke_all.lambda_handler
+    timeout: 20
+    memorySize: 256
+    events:
+      - http:
+          path: /api/v1/users/{user_id}/sessions
+          method: DELETE
+          cors: true
+
+resources:
+  Outputs:
+    ApiUrl:
+      Description: "API Gateway endpoint URL for Gamarriando User Service"
+      Value:
+        Fn::Join:
+          - ""
+          - - "https://"
+            - Ref: ApiGatewayRestApi
+            - ".execute-api."
+            - ${self:provider.region}
+            - ".amazonaws.com/"
+            - ${self:provider.stage}
+      Export:
+        Name: ${self:service}-${self:provider.stage}-apiUrl
+    
+    VPCConfiguration:
+      Description: "VPC Configuration for Lambda functions"
+      Value:
+        Fn::Join:
+          - ", "
+          - - "VPC: vpc-0247fc2c1890c7403"
+            - "Security Groups: sg-0b7776e36a7150695"
+            - "Subnets: subnet-0d8b3798c4f2897be, subnet-0f56032e6c45bd02d"
+    
+    DatabaseInfo:
+      Description: "RDS PostgreSQL Database Information"
+      Value:
+        Fn::Join:
+          - ", "
+          - - "Host: gamarriando-product-service-dev.cgb6u24c81zq.us-east-1.rds.amazonaws.com"
+            - "Database: gamarriando"
+            - "Port: 5432"
