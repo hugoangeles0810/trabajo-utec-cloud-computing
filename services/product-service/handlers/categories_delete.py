@@ -6,8 +6,12 @@ DELETE /api/v1/categories/{category_id}
 import json
 import logging
 import os
-import boto3
+import sys
 from typing import Dict, Any
+
+# Add parent directory to path to import db_utils
+sys.path.append('/var/task')
+from db_utils import execute_single_query, execute_delete
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -38,17 +42,37 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         if not category_id:
             return error_response("Category ID is required", 400)
         
-        # Get database configuration
-        db_config = {
-            'host': os.getenv('DB_HOST', 'localhost'),
-            'port': os.getenv('DB_PORT', '5432'),
-            'database': os.getenv('DB_NAME', 'gamarriando'),
-            'user': os.getenv('DB_USER', 'gamarriando'),
-            'password': os.getenv('DB_PASSWORD', 'gamarriando123')
-        }
+        # Check if category exists
+        check_query = "SELECT id, name FROM categories WHERE id = %s"
+        existing_category = execute_single_query(check_query, (int(category_id),))
         
-        # Simulate category deletion
-        return success_response(None, f"Category {category_id} deleted successfully from RDS infrastructure")
+        if not existing_category:
+            return not_found_response("Category not found")
+        
+        # Check if category has products
+        products_check_query = "SELECT COUNT(*) as count FROM products WHERE category_id = %s"
+        products_result = execute_single_query(products_check_query, (int(category_id),))
+        products_count = products_result['count'] if products_result else 0
+        
+        if products_count > 0:
+            return error_response(f"Cannot delete category with {products_count} products. Please move or delete products first.", 409)
+        
+        # Check if category has subcategories
+        subcategories_check_query = "SELECT COUNT(*) as count FROM categories WHERE parent_id = %s"
+        subcategories_result = execute_single_query(subcategories_check_query, (int(category_id),))
+        subcategories_count = subcategories_result['count'] if subcategories_result else 0
+        
+        if subcategories_count > 0:
+            return error_response(f"Cannot delete category with {subcategories_count} subcategories. Please move or delete subcategories first.", 409)
+        
+        # Delete category from database
+        delete_query = "DELETE FROM categories WHERE id = %s"
+        affected_rows = execute_delete(delete_query, (int(category_id),))
+        
+        if affected_rows == 0:
+            return error_response("Category not found or could not be deleted", 404)
+        
+        return success_response(None, f"Category '{existing_category['name']}' deleted successfully")
         
     except Exception as e:
         logger.error(f"Categories delete error: {str(e)}")
@@ -65,7 +89,19 @@ def success_response(data: Any, message: str = "Success") -> Dict[str, Any]:
         'body': json.dumps({
             'data': data,
             'message': message,
-            'source': 'RDS Aurora PostgreSQL - Infrastructure Ready'
+        })
+    }
+
+def not_found_response(message: str = "Resource not found") -> Dict[str, Any]:
+    """Create not found response"""
+    return {
+        'statusCode': 404,
+        'headers': {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        },
+        'body': json.dumps({
+            'message': message
         })
     }
 

@@ -8,6 +8,12 @@ import logging
 import os
 import boto3
 from typing import Dict, Any
+import sys
+from datetime import datetime
+
+# Add parent directory to path to import db_utils
+sys.path.append('/var/task')
+from db_utils import execute_insert, execute_single_query, create_parameter
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -40,33 +46,58 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             if not body.get(field):
                 return error_response(f"Field '{field}' is required", 400)
         
-        # Get database configuration
-        db_config = {
-            'host': os.getenv('DB_HOST', 'localhost'),
-            'port': os.getenv('DB_PORT', '5432'),
-            'database': os.getenv('DB_NAME', 'gamarriando'),
-            'user': os.getenv('DB_USER', 'gamarriando'),
-            'password': os.getenv('DB_PASSWORD', 'gamarriando123')
-        }
+        # Create product in database using psycopg2
+        query = """
+            INSERT INTO products (name, slug, description, price, stock, status, 
+                                category_id, vendor_id, images, tags, created_at, updated_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            RETURNING id
+        """
         
-        # Simulate product creation
-        new_product = {
-            'id': '9',
-            'name': body['name'],
-            'slug': body['slug'],
-            'description': body.get('description', ''),
-            'price': float(body['price']),
-            'stock': body.get('stock', 0),
-            'status': body.get('status', 'active'),
-            'category_id': body['category_id'],
-            'vendor_id': body['vendor_id'],
-            'images': body.get('images', []),
-            'tags': body.get('tags', []),
-            'created_at': '2024-10-05T04:00:00Z',
-            'updated_at': '2024-10-05T04:00:00Z'
-        }
+        now = datetime.utcnow()
+        parameters = (
+            body['name'],
+            body['slug'],
+            body.get('description', ''),
+            float(body['price']),
+            body.get('stock', 0),
+            body.get('status', 'active'),
+            int(body['category_id']),
+            int(body['vendor_id']),
+            json.dumps(body.get('images', [])),
+            json.dumps(body.get('tags', [])),
+            now,
+            now
+        )
         
-        return created_response(new_product, "Product created successfully in RDS infrastructure")
+        product_id = execute_insert(query, parameters)
+        
+        # Get the created product
+        get_query = """
+            SELECT id, name, slug, description, price, stock, status, 
+                   category_id, vendor_id, images, tags, created_at, updated_at
+            FROM products
+            WHERE id = %s
+        """
+        
+        get_parameters = (product_id,)
+        new_product = execute_single_query(get_query, get_parameters)
+        
+        # Convert data types for JSON serialization
+        new_product['id'] = str(new_product['id'])
+        new_product['category_id'] = str(new_product['category_id'])
+        new_product['vendor_id'] = str(new_product['vendor_id'])
+        new_product['price'] = float(new_product['price'])
+        if new_product['created_at']:
+            new_product['created_at'] = new_product['created_at'].isoformat()
+        if new_product['updated_at']:
+            new_product['updated_at'] = new_product['updated_at'].isoformat()
+        if new_product['images'] is None:
+            new_product['images'] = []
+        if new_product['tags'] is None:
+            new_product['tags'] = []
+        
+        return created_response(new_product, "Product created successfully")
         
     except json.JSONDecodeError:
         return error_response("Invalid JSON in request body", 400)
@@ -86,8 +117,7 @@ def success_response(data: Any, message: str = "Success") -> Dict[str, Any]:
         },
         'body': json.dumps({
             'data': data,
-            'message': message,
-            'source': 'RDS Aurora PostgreSQL - Infrastructure Ready'
+            'message': message
         })
     }
 
@@ -101,8 +131,7 @@ def created_response(data: Any, message: str = "Created successfully") -> Dict[s
         },
         'body': json.dumps({
             'data': data,
-            'message': message,
-            'source': 'RDS Aurora PostgreSQL - Infrastructure Ready'
+            'message': message
         })
     }
 

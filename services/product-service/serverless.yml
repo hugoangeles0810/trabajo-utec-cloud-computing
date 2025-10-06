@@ -14,13 +14,14 @@ provider:
     ManagedBy: serverless
   environment:
     STAGE: ${self:provider.stage}
-    # Database Configuration for RDS Aurora
-    DATABASE_URL: ${env:DATABASE_URL, ''}
-    DB_HOST: ${env:DB_HOST, ''}
+    # Database Configuration (PostgreSQL with psycopg2)
+    DB_HOST: ${env:DB_HOST, 'gamarriando-product-service-dev.cgb6u24c81zq.us-east-1.rds.amazonaws.com'}
     DB_PORT: ${env:DB_PORT, '5432'}
     DB_NAME: ${env:DB_NAME, 'gamarriando'}
     DB_USER: ${env:DB_USER, 'gamarriando'}
     DB_PASSWORD: ${env:DB_PASSWORD, 'Gamarriando2024!'}
+    DATABASE_URL: ${env:DATABASE_URL, 'postgresql://gamarriando:Gamarriando2024!@gamarriando-product-service-dev.cgb6u24c81zq.us-east-1.rds.amazonaws.com:5432/gamarriando'}
+    # Connection pool configuration
     DB_POOL_SIZE: ${env:DB_POOL_SIZE, '5'}
     DB_MAX_OVERFLOW: ${env:DB_MAX_OVERFLOW, '10'}
     DB_POOL_RECYCLE: ${env:DB_POOL_RECYCLE, '3600'}
@@ -197,23 +198,19 @@ functions:
           method: DELETE
           cors: true
 
+# Using psycopg2 with Lambda Layer approach
 plugins:
   - serverless-python-requirements
 
 custom:
   pythonRequirements:
-    dockerizePip: false
-    slim: true
+    dockerizePip: true
+    slim: false
     strip: false
     fileName: requirements.txt
     noDeps:
       - boto3
       - botocore
-    layer:
-      name: gamarriando-product-service-deps
-      description: Dependencies for Gamarriando Product Service
-      compatibleRuntimes:
-        - python3.9
 
 resources:
   # S3 Bucket for product images

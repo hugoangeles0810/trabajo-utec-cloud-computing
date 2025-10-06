@@ -6,8 +6,13 @@ PUT /api/v1/products/{product_id}
 import json
 import logging
 import os
-import boto3
+import sys
+from datetime import datetime
 from typing import Dict, Any
+
+# Add parent directory to path to import db_utils
+sys.path.append('/var/task')
+from db_utils import execute_single_query, execute_update
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -41,33 +46,102 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         # Parse request body
         body = json.loads(event.get('body', '{}'))
         
-        # Get database configuration
-        db_config = {
-            'host': os.getenv('DB_HOST', 'localhost'),
-            'port': os.getenv('DB_PORT', '5432'),
-            'database': os.getenv('DB_NAME', 'gamarriando'),
-            'user': os.getenv('DB_USER', 'gamarriando'),
-            'password': os.getenv('DB_PASSWORD', 'gamarriando123')
-        }
+        # Check if product exists
+        check_query = "SELECT id FROM products WHERE id = %s"
+        existing_product = execute_single_query(check_query, (int(product_id),))
         
-        # Simulate product update
-        updated_product = {
-            'id': product_id,
-            'name': body.get('name', 'Updated Product'),
-            'slug': body.get('slug', 'updated-product'),
-            'description': body.get('description', 'Updated description'),
-            'price': float(body.get('price', 0.0)),
-            'stock': body.get('stock', 0),
-            'status': body.get('status', 'active'),
-            'category_id': body.get('category_id', '1'),
-            'vendor_id': body.get('vendor_id', '1'),
-            'images': body.get('images', []),
-            'tags': body.get('tags', []),
-            'created_at': '2024-10-05T04:00:00Z',
-            'updated_at': '2024-10-05T04:00:00Z'
-        }
+        if not existing_product:
+            return not_found_response("Product not found")
         
-        return success_response(updated_product, "Product updated successfully in RDS infrastructure")
+        # Build update query dynamically based on provided fields
+        update_fields = []
+        parameters = []
+        
+        if 'name' in body:
+            update_fields.append("name = %s")
+            parameters.append(body['name'])
+        
+        if 'slug' in body:
+            update_fields.append("slug = %s")
+            parameters.append(body['slug'])
+        
+        if 'description' in body:
+            update_fields.append("description = %s")
+            parameters.append(body['description'])
+        
+        if 'price' in body:
+            update_fields.append("price = %s")
+            parameters.append(float(body['price']))
+        
+        if 'stock' in body:
+            update_fields.append("stock = %s")
+            parameters.append(body['stock'])
+        
+        if 'status' in body:
+            update_fields.append("status = %s")
+            parameters.append(body['status'])
+        
+        if 'category_id' in body:
+            update_fields.append("category_id = %s")
+            parameters.append(int(body['category_id']))
+        
+        if 'vendor_id' in body:
+            update_fields.append("vendor_id = %s")
+            parameters.append(int(body['vendor_id']))
+        
+        if 'images' in body:
+            update_fields.append("images = %s")
+            parameters.append(json.dumps(body['images']))
+        
+        if 'tags' in body:
+            update_fields.append("tags = %s")
+            parameters.append(json.dumps(body['tags']))
+        
+        if not update_fields:
+            return error_response("No fields to update", 400)
+        
+        # Add updated_at timestamp
+        update_fields.append("updated_at = %s")
+        parameters.append(datetime.utcnow())
+        
+        # Add product_id for WHERE clause
+        parameters.append(int(product_id))
+        
+        # Execute update
+        update_query = f"""
+            UPDATE products 
+            SET {', '.join(update_fields)}
+            WHERE id = %s
+        """
+        
+        affected_rows = execute_update(update_query, tuple(parameters))
+        
+        if affected_rows == 0:
+            return error_response("Product not found or no changes made", 404)
+        
+        # Get the updated product
+        get_query = """
+            SELECT id, name, slug, description, price, stock, status,
+                   category_id, vendor_id, images, tags, created_at, updated_at
+            FROM products
+            WHERE id = %s
+        """
+        
+        updated_product = execute_single_query(get_query, (int(product_id),))
+        
+        # Convert data types for JSON serialization
+        updated_product['id'] = str(updated_product['id'])
+        updated_product['category_id'] = str(updated_product['category_id'])
+        updated_product['vendor_id'] = str(updated_product['vendor_id'])
+        # Convert Decimal fields to float for JSON serialization
+        if updated_product.get('price') is not None:
+            updated_product['price'] = float(updated_product['price'])
+        if updated_product['created_at']:
+            updated_product['created_at'] = updated_product['created_at'].isoformat()
+        if updated_product['updated_at']:
+            updated_product['updated_at'] = updated_product['updated_at'].isoformat()
+        
+        return success_response(updated_product, "Product updated successfully")
         
     except json.JSONDecodeError:
         return error_response("Invalid JSON in request body", 400)
@@ -88,7 +162,19 @@ def success_response(data: Any, message: str = "Success") -> Dict[str, Any]:
         'body': json.dumps({
             'data': data,
             'message': message,
-            'source': 'RDS Aurora PostgreSQL - Infrastructure Ready'
+        })
+    }
+
+def not_found_response(message: str = "Resource not found") -> Dict[str, Any]:
+    """Create not found response"""
+    return {
+        'statusCode': 404,
+        'headers': {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        },
+        'body': json.dumps({
+            'message': message
         })
     }
 

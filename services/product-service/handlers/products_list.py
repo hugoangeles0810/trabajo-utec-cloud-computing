@@ -7,7 +7,12 @@ import json
 import logging
 import os
 import boto3
-from typing import Dict, Any
+from typing import Dict, Any, Optional
+import sys
+
+# Add parent directory to path to import db_utils
+sys.path.append('/var/task')
+from db_utils import execute_query, create_parameter
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -31,167 +36,82 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'body': ''
             }
         
-        # Get database configuration
-        db_config = {
-            'host': os.getenv('DB_HOST', 'localhost'),
-            'port': os.getenv('DB_PORT', '5432'),
-            'database': os.getenv('DB_NAME', 'gamarriando'),
-            'user': os.getenv('DB_USER', 'gamarriando'),
-            'password': os.getenv('DB_PASSWORD', 'gamarriando123')
-        }
+        # Parse query parameters
+        query_params = event.get('queryStringParameters') or {}
+        skip = int(query_params.get('skip', 0))
+        limit = int(query_params.get('limit', 100))
+        category_id = query_params.get('category_id')
+        vendor_id = query_params.get('vendor_id')
+        status = query_params.get('status', 'active')
         
-        # Simulate database query with real data structure
-        products = [
-            {
-                "id": "1",
-                "name": "iPhone 15 Pro",
-                "slug": "iphone-15-pro",
-                "description": "El smartphone más avanzado de Apple con chip A17 Pro",
-                "price": 999.99,
-                "stock": 25,
-                "status": "active",
-                "category_id": "6",
-                "vendor_id": "1",
-                "images": [
-                    "https://example.com/iphone15pro1.jpg",
-                    "https://example.com/iphone15pro2.jpg"
-                ],
-                "tags": ["smartphone", "apple", "premium"],
-                "created_at": "2024-10-05T04:00:00Z",
-                "updated_at": "2024-10-05T04:00:00Z"
-            },
-            {
-                "id": "2",
-                "name": "MacBook Air M2",
-                "slug": "macbook-air-m2",
-                "description": "Laptop ultradelgada con chip M2 de Apple",
-                "price": 1199.99,
-                "stock": 15,
-                "status": "active",
-                "category_id": "7",
-                "vendor_id": "1",
-                "images": [
-                    "https://example.com/macbookair1.jpg"
-                ],
-                "tags": ["laptop", "apple", "m2", "ultrabook"],
-                "created_at": "2024-10-05T04:00:00Z",
-                "updated_at": "2024-10-05T04:00:00Z"
-            },
-            {
-                "id": "3",
-                "name": "Samsung Galaxy S24",
-                "slug": "samsung-galaxy-s24",
-                "description": "Smartphone Android con IA integrada",
-                "price": 799.99,
-                "stock": 30,
-                "status": "active",
-                "category_id": "6",
-                "vendor_id": "1",
-                "images": [
-                    "https://example.com/galaxys24.jpg"
-                ],
-                "tags": ["smartphone", "samsung", "android", "ai"],
-                "created_at": "2024-10-05T04:00:00Z",
-                "updated_at": "2024-10-05T04:00:00Z"
-            },
-            {
-                "id": "4",
-                "name": "Camiseta Básica Algodón",
-                "slug": "camiseta-basica-algodon",
-                "description": "Camiseta 100% algodón orgánico, cómoda y duradera",
-                "price": 19.99,
-                "stock": 100,
-                "status": "active",
-                "category_id": "9",
-                "vendor_id": "2",
-                "images": [
-                    "https://example.com/camiseta1.jpg"
-                ],
-                "tags": ["ropa", "basica", "algodon", "organico"],
-                "created_at": "2024-10-05T04:00:00Z",
-                "updated_at": "2024-10-05T04:00:00Z"
-            },
-            {
-                "id": "5",
-                "name": "Jeans Clásicos",
-                "slug": "jeans-clasicos",
-                "description": "Jeans de corte clásico en denim premium",
-                "price": 49.99,
-                "stock": 50,
-                "status": "active",
-                "category_id": "10",
-                "vendor_id": "2",
-                "images": [
-                    "https://example.com/jeans1.jpg"
-                ],
-                "tags": ["ropa", "jeans", "denim", "clasico"],
-                "created_at": "2024-10-05T04:00:00Z",
-                "updated_at": "2024-10-05T04:00:00Z"
-            },
-            {
-                "id": "6",
-                "name": "Zapatillas Deportivas",
-                "slug": "zapatillas-deportivas",
-                "description": "Zapatillas para running con tecnología de amortiguación",
-                "price": 89.99,
-                "stock": 75,
-                "status": "active",
-                "category_id": "4",
-                "vendor_id": "4",
-                "images": [
-                    "https://example.com/zapatillas1.jpg"
-                ],
-                "tags": ["deportes", "running", "zapatillas", "amortiguacion"],
-                "created_at": "2024-10-05T04:00:00Z",
-                "updated_at": "2024-10-05T04:00:00Z"
-            },
-            {
-                "id": "7",
-                "name": "Set de Herramientas",
-                "slug": "set-herramientas",
-                "description": "Set completo de herramientas para el hogar",
-                "price": 79.99,
-                "stock": 40,
-                "status": "active",
-                "category_id": "3",
-                "vendor_id": "3",
-                "images": [
-                    "https://example.com/herramientas1.jpg"
-                ],
-                "tags": ["hogar", "herramientas", "bricolaje"],
-                "created_at": "2024-10-05T04:00:00Z",
-                "updated_at": "2024-10-05T04:00:00Z"
-            },
-            {
-                "id": "8",
-                "name": "Libro: Clean Code",
-                "slug": "libro-clean-code",
-                "description": "Guía para escribir código limpio y mantenible",
-                "price": 29.99,
-                "stock": 60,
-                "status": "active",
-                "category_id": "5",
-                "vendor_id": "5",
-                "images": [
-                    "https://example.com/cleancode.jpg"
-                ],
-                "tags": ["programacion", "desarrollo", "software", "calidad"],
-                "created_at": "2024-10-05T04:00:00Z",
-                "updated_at": "2024-10-05T04:00:00Z"
-            }
-        ]
+        # Build query with filters using psycopg2 parameters
+        where_conditions = ["status = %s"]
+        parameters = [status]
+        
+        if category_id:
+            where_conditions.append("category_id = %s")
+            parameters.append(int(category_id))
+        
+        if vendor_id:
+            where_conditions.append("vendor_id = %s")
+            parameters.append(int(vendor_id))
+        
+        where_clause = " AND ".join(where_conditions)
+        
+        # Add pagination parameters
+        parameters.extend([limit, skip])
+        
+        # Query products from database
+        query = f"""
+            SELECT id, name, slug, description, price, stock, status,
+                   category_id, vendor_id, images, tags, created_at, updated_at
+            FROM products
+            WHERE {where_clause}
+            ORDER BY created_at DESC
+            LIMIT %s OFFSET %s
+        """
+
+        products_data = execute_query(query, tuple(parameters))
+
+        # Get total count for pagination (remove limit and offset parameters)
+        count_parameters = parameters[:-2]
+        count_query = f"SELECT COUNT(*) as total FROM products WHERE {where_clause}"
+        count_result = execute_query(count_query, tuple(count_parameters))
+        total_count = int(count_result[0]['total']) if count_result else 0
+        
+        # Convert data types for JSON serialization
+        for product in products_data:
+            product['id'] = str(product['id'])
+            product['category_id'] = str(product['category_id'])
+            product['vendor_id'] = str(product['vendor_id'])
+            product['price'] = float(product['price'])
+            if product['created_at']:
+                product['created_at'] = product['created_at'].isoformat()
+            if product['updated_at']:
+                product['updated_at'] = product['updated_at'].isoformat()
+            if product['images'] is None:
+                product['images'] = []
+            if product['tags'] is None:
+                product['tags'] = []
         
         return success_response({
-            'products': products,
-            'total': len(products),
-            'database': {
-                'host': db_config['host'],
-                'database': db_config['database'],
-                'status': 'RDS Aurora PostgreSQL - Infrastructure Ready',
-                'connection': 'VPC configured, Security Groups configured'
+            'products': products_data,
+            'total': total_count,
+            'pagination': {
+                'skip': skip,
+                'limit': limit,
+                'has_more': (skip + limit) < total_count
+            },
+            'filters': {
+                'category_id': category_id,
+                'vendor_id': vendor_id,
+                'status': status
             }
-        }, f"Retrieved {len(products)} products from RDS infrastructure")
+        }, f"Retrieved {len(products_data)} products")
         
+    except ValueError as e:
+        logger.error(f"Invalid parameter error: {str(e)}")
+        return error_response("Invalid query parameters", 400, str(e))
     except Exception as e:
         logger.error(f"Products list error: {str(e)}")
         return error_response("Failed to retrieve products", 500, str(e))
@@ -206,8 +126,7 @@ def success_response(data: Any, message: str = "Success") -> Dict[str, Any]:
         },
         'body': json.dumps({
             'data': data,
-            'message': message,
-            'source': 'RDS Aurora PostgreSQL - Infrastructure Ready'
+            'message': message
         })
     }
 

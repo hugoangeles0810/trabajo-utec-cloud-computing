@@ -6,8 +6,13 @@ POST /api/v1/categories
 import json
 import logging
 import os
-import boto3
+import sys
+from datetime import datetime
 from typing import Dict, Any
+
+# Add parent directory to path to import db_utils
+sys.path.append('/var/task')
+from db_utils import execute_insert, execute_single_query
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -40,29 +45,53 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             if not body.get(field):
                 return error_response(f"Field '{field}' is required", 400)
         
-        # Get database configuration
-        db_config = {
-            'host': os.getenv('DB_HOST', 'localhost'),
-            'port': os.getenv('DB_PORT', '5432'),
-            'database': os.getenv('DB_NAME', 'gamarriando'),
-            'user': os.getenv('DB_USER', 'gamarriando'),
-            'password': os.getenv('DB_PASSWORD', 'gamarriando123')
-        }
+        # Check if slug already exists
+        slug_check_query = "SELECT id FROM categories WHERE slug = %s"
+        existing_category = execute_single_query(slug_check_query, (body['slug'],))
         
-        # Simulate category creation
-        new_category = {
-            'id': '12',
-            'name': body['name'],
-            'slug': body['slug'],
-            'description': body.get('description', ''),
-            'parent_id': body.get('parent_id'),
-            'order': body.get('order', 0),
-            'is_active': body.get('is_active', True),
-            'created_at': '2024-10-05T04:00:00Z',
-            'updated_at': '2024-10-05T04:00:00Z'
-        }
+        if existing_category:
+            return error_response("Category with this slug already exists", 409)
         
-        return created_response(new_category, "Category created successfully in RDS infrastructure")
+        # Create category in database
+        query = """
+            INSERT INTO categories (name, slug, description, parent_id, "order", is_active, created_at, updated_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            RETURNING id
+        """
+        
+        now = datetime.utcnow()
+        parameters = (
+            body['name'],
+            body['slug'],
+            body.get('description', ''),
+            int(body['parent_id']) if body.get('parent_id') else None,
+            body.get('order', 0),
+            body.get('is_active', True),
+            now,
+            now
+        )
+        
+        category_id = execute_insert(query, parameters)
+        
+        # Get the created category
+        get_query = """
+            SELECT id, name, slug, description, parent_id, "order", is_active, created_at, updated_at
+            FROM categories
+            WHERE id = %s
+        """
+        
+        new_category = execute_single_query(get_query, (category_id,))
+        
+        # Convert data types for JSON serialization
+        new_category['id'] = str(new_category['id'])
+        if new_category['parent_id']:
+            new_category['parent_id'] = str(new_category['parent_id'])
+        if new_category['created_at']:
+            new_category['created_at'] = new_category['created_at'].isoformat()
+        if new_category['updated_at']:
+            new_category['updated_at'] = new_category['updated_at'].isoformat()
+        
+        return created_response(new_category, "Category created successfully")
         
     except json.JSONDecodeError:
         return error_response("Invalid JSON in request body", 400)
@@ -81,7 +110,6 @@ def success_response(data: Any, message: str = "Success") -> Dict[str, Any]:
         'body': json.dumps({
             'data': data,
             'message': message,
-            'source': 'RDS Aurora PostgreSQL - Infrastructure Ready'
         })
     }
 
@@ -96,7 +124,6 @@ def created_response(data: Any, message: str = "Created successfully") -> Dict[s
         'body': json.dumps({
             'data': data,
             'message': message,
-            'source': 'RDS Aurora PostgreSQL - Infrastructure Ready'
         })
     }
 

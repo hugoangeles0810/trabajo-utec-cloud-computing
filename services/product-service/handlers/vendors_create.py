@@ -6,8 +6,13 @@ POST /api/v1/vendors
 import json
 import logging
 import os
-import boto3
+import sys
+from datetime import datetime
 from typing import Dict, Any
+
+# Add parent directory to path to import db_utils
+sys.path.append('/var/task')
+from db_utils import execute_insert, execute_single_query
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -40,32 +45,61 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             if not body.get(field):
                 return error_response(f"Field '{field}' is required", 400)
         
-        # Get database configuration
-        db_config = {
-            'host': os.getenv('DB_HOST', 'localhost'),
-            'port': os.getenv('DB_PORT', '5432'),
-            'database': os.getenv('DB_NAME', 'gamarriando'),
-            'user': os.getenv('DB_USER', 'gamarriando'),
-            'password': os.getenv('DB_PASSWORD', 'gamarriando123')
-        }
+        # Check if email already exists
+        email_check_query = "SELECT id FROM vendors WHERE email = %s"
+        existing_vendor = execute_single_query(email_check_query, (body['email'],))
         
-        # Simulate vendor creation
-        new_vendor = {
-            'id': '6',
-            'name': body['name'],
-            'email': body['email'],
-            'phone': body.get('phone', ''),
-            'address': body.get('address', {}),
-            'description': body.get('description', ''),
-            'is_active': body.get('is_active', True),
-            'is_verified': body.get('is_verified', False),
-            'rating': body.get('rating', 0.0),
-            'total_products': body.get('total_products', 0),
-            'created_at': '2024-10-05T04:00:00Z',
-            'updated_at': '2024-10-05T04:00:00Z'
-        }
+        if existing_vendor:
+            return error_response("Vendor with this email already exists", 409)
         
-        return created_response(new_vendor, "Vendor created successfully in RDS infrastructure")
+        # Create vendor in database
+        query = """
+            INSERT INTO vendors (name, email, phone, address, description, is_active, is_verified, rating, total_products, created_at, updated_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            RETURNING id
+        """
+        
+        now = datetime.utcnow()
+        parameters = (
+            body['name'],
+            body['email'],
+            body.get('phone', ''),
+            json.dumps(body.get('address', {})),
+            body.get('description', ''),
+            body.get('is_active', True),
+            body.get('is_verified', False),
+            body.get('rating', 0.0),
+            body.get('total_products', 0),
+            now,
+            now
+        )
+        
+        vendor_id = execute_insert(query, parameters)
+        
+        # Get the created vendor
+        get_query = """
+            SELECT id, name, email, phone, address, description, is_active, is_verified, rating, total_products, created_at, updated_at
+            FROM vendors
+            WHERE id = %s
+        """
+        
+        new_vendor = execute_single_query(get_query, (vendor_id,))
+        
+        # Convert data types for JSON serialization
+        new_vendor['id'] = str(new_vendor['id'])
+        # Convert Decimal fields to float for JSON serialization
+        if new_vendor.get('rating') is not None:
+            new_vendor['rating'] = float(new_vendor['rating'])
+        if new_vendor.get('total_products') is not None:
+            new_vendor['total_products'] = int(new_vendor['total_products'])
+        if new_vendor['created_at']:
+            new_vendor['created_at'] = new_vendor['created_at'].isoformat()
+        if new_vendor['updated_at']:
+            new_vendor['updated_at'] = new_vendor['updated_at'].isoformat()
+        if new_vendor['address'] is None:
+            new_vendor['address'] = {}
+        
+        return created_response(new_vendor, "Vendor created successfully")
         
     except json.JSONDecodeError:
         return error_response("Invalid JSON in request body", 400)
@@ -84,7 +118,6 @@ def success_response(data: Any, message: str = "Success") -> Dict[str, Any]:
         'body': json.dumps({
             'data': data,
             'message': message,
-            'source': 'RDS Aurora PostgreSQL - Infrastructure Ready'
         })
     }
 
@@ -99,7 +132,6 @@ def created_response(data: Any, message: str = "Created successfully") -> Dict[s
         'body': json.dumps({
             'data': data,
             'message': message,
-            'source': 'RDS Aurora PostgreSQL - Infrastructure Ready'
         })
     }
 

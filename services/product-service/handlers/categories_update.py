@@ -6,8 +6,13 @@ PUT /api/v1/categories/{category_id}
 import json
 import logging
 import os
-import boto3
+import sys
+from datetime import datetime
 from typing import Dict, Any
+
+# Add parent directory to path to import db_utils
+sys.path.append('/var/task')
+from db_utils import execute_single_query, execute_update
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -41,29 +46,90 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         # Parse request body
         body = json.loads(event.get('body', '{}'))
         
-        # Get database configuration
-        db_config = {
-            'host': os.getenv('DB_HOST', 'localhost'),
-            'port': os.getenv('DB_PORT', '5432'),
-            'database': os.getenv('DB_NAME', 'gamarriando'),
-            'user': os.getenv('DB_USER', 'gamarriando'),
-            'password': os.getenv('DB_PASSWORD', 'gamarriando123')
-        }
+        # Check if category exists
+        check_query = "SELECT id FROM categories WHERE id = %s"
+        existing_category = execute_single_query(check_query, (int(category_id),))
         
-        # Simulate category update
-        updated_category = {
-            'id': category_id,
-            'name': body.get('name', 'Updated Category'),
-            'slug': body.get('slug', 'updated-category'),
-            'description': body.get('description', 'Updated description'),
-            'parent_id': body.get('parent_id'),
-            'order': body.get('order', 0),
-            'is_active': body.get('is_active', True),
-            'created_at': '2024-10-05T04:00:00Z',
-            'updated_at': '2024-10-05T04:00:00Z'
-        }
+        if not existing_category:
+            return not_found_response("Category not found")
         
-        return success_response(updated_category, "Category updated successfully in RDS infrastructure")
+        # Check if slug is being updated and if it already exists
+        if 'slug' in body:
+            slug_check_query = "SELECT id FROM categories WHERE slug = %s AND id != %s"
+            existing_slug = execute_single_query(slug_check_query, (body['slug'], int(category_id)))
+            
+            if existing_slug:
+                return error_response("Category with this slug already exists", 409)
+        
+        # Build update query dynamically based on provided fields
+        update_fields = []
+        parameters = []
+        
+        if 'name' in body:
+            update_fields.append("name = %s")
+            parameters.append(body['name'])
+        
+        if 'slug' in body:
+            update_fields.append("slug = %s")
+            parameters.append(body['slug'])
+        
+        if 'description' in body:
+            update_fields.append("description = %s")
+            parameters.append(body['description'])
+        
+        if 'parent_id' in body:
+            update_fields.append("parent_id = %s")
+            parameters.append(int(body['parent_id']) if body['parent_id'] else None)
+        
+        if 'order' in body:
+            update_fields.append('"order" = %s')
+            parameters.append(body['order'])
+        
+        if 'is_active' in body:
+            update_fields.append("is_active = %s")
+            parameters.append(body['is_active'])
+        
+        if not update_fields:
+            return error_response("No fields to update", 400)
+        
+        # Add updated_at timestamp
+        update_fields.append("updated_at = %s")
+        parameters.append(datetime.utcnow())
+        
+        # Add category_id for WHERE clause
+        parameters.append(int(category_id))
+        
+        # Execute update
+        update_query = f"""
+            UPDATE categories 
+            SET {', '.join(update_fields)}
+            WHERE id = %s
+        """
+        
+        affected_rows = execute_update(update_query, tuple(parameters))
+        
+        if affected_rows == 0:
+            return error_response("Category not found or no changes made", 404)
+        
+        # Get the updated category
+        get_query = """
+            SELECT id, name, slug, description, parent_id, "order", is_active, created_at, updated_at
+            FROM categories
+            WHERE id = %s
+        """
+        
+        updated_category = execute_single_query(get_query, (int(category_id),))
+        
+        # Convert data types for JSON serialization
+        updated_category['id'] = str(updated_category['id'])
+        if updated_category['parent_id']:
+            updated_category['parent_id'] = str(updated_category['parent_id'])
+        if updated_category['created_at']:
+            updated_category['created_at'] = updated_category['created_at'].isoformat()
+        if updated_category['updated_at']:
+            updated_category['updated_at'] = updated_category['updated_at'].isoformat()
+        
+        return success_response(updated_category, "Category updated successfully")
         
     except json.JSONDecodeError:
         return error_response("Invalid JSON in request body", 400)
@@ -82,7 +148,19 @@ def success_response(data: Any, message: str = "Success") -> Dict[str, Any]:
         'body': json.dumps({
             'data': data,
             'message': message,
-            'source': 'RDS Aurora PostgreSQL - Infrastructure Ready'
+        })
+    }
+
+def not_found_response(message: str = "Resource not found") -> Dict[str, Any]:
+    """Create not found response"""
+    return {
+        'statusCode': 404,
+        'headers': {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        },
+        'body': json.dumps({
+            'message': message
         })
     }
 

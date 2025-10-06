@@ -6,8 +6,12 @@ DELETE /api/v1/products/{product_id}
 import json
 import logging
 import os
-import boto3
+import sys
 from typing import Dict, Any
+
+# Add parent directory to path to import db_utils
+sys.path.append('/var/task')
+from db_utils import execute_single_query, execute_delete
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -38,17 +42,21 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         if not product_id:
             return error_response("Product ID is required", 400)
         
-        # Get database configuration
-        db_config = {
-            'host': os.getenv('DB_HOST', 'localhost'),
-            'port': os.getenv('DB_PORT', '5432'),
-            'database': os.getenv('DB_NAME', 'gamarriando'),
-            'user': os.getenv('DB_USER', 'gamarriando'),
-            'password': os.getenv('DB_PASSWORD', 'gamarriando123')
-        }
+        # Check if product exists
+        check_query = "SELECT id, name FROM products WHERE id = %s"
+        existing_product = execute_single_query(check_query, (int(product_id),))
         
-        # Simulate product deletion
-        return success_response(None, f"Product {product_id} deleted successfully from RDS infrastructure")
+        if not existing_product:
+            return not_found_response("Product not found")
+        
+        # Delete product from database
+        delete_query = "DELETE FROM products WHERE id = %s"
+        affected_rows = execute_delete(delete_query, (int(product_id),))
+        
+        if affected_rows == 0:
+            return error_response("Product not found or could not be deleted", 404)
+        
+        return success_response(None, f"Product '{existing_product['name']}' deleted successfully")
         
     except Exception as e:
         logger.error(f"Products delete error: {str(e)}")
@@ -65,7 +73,19 @@ def success_response(data: Any, message: str = "Success") -> Dict[str, Any]:
         'body': json.dumps({
             'data': data,
             'message': message,
-            'source': 'RDS Aurora PostgreSQL - Infrastructure Ready'
+        })
+    }
+
+def not_found_response(message: str = "Resource not found") -> Dict[str, Any]:
+    """Create not found response"""
+    return {
+        'statusCode': 404,
+        'headers': {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        },
+        'body': json.dumps({
+            'message': message
         })
     }
 

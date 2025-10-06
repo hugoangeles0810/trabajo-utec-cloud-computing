@@ -8,6 +8,11 @@ import logging
 import os
 import boto3
 from typing import Dict, Any
+import sys
+
+# Add parent directory to path to import db_utils
+sys.path.append('/var/task')
+from db_utils import execute_single_query, create_parameter
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -38,30 +43,29 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
         if not category_id:
             return error_response("Category ID is required", 400)
         
-        # Get database configuration
-        db_config = {
-            'host': os.getenv('DB_HOST', 'localhost'),
-            'port': os.getenv('DB_PORT', '5432'),
-            'database': os.getenv('DB_NAME', 'gamarriando'),
-            'user': os.getenv('DB_USER', 'gamarriando'),
-            'password': os.getenv('DB_PASSWORD', 'gamarriando123')
-        }
-        
-        # Simulate database query with real data structure
-        categories = [
-            {"id": "1", "name": "Electrónicos", "slug": "electronicos", "description": "Productos electrónicos y tecnología", "parent_id": None, "order": 1, "is_active": True, "created_at": "2024-10-05T04:00:00Z", "updated_at": "2024-10-05T04:00:00Z"},
-            {"id": "2", "name": "Ropa", "slug": "ropa", "description": "Ropa y accesorios", "parent_id": None, "order": 2, "is_active": True, "created_at": "2024-10-05T04:00:00Z", "updated_at": "2024-10-05T04:00:00Z"},
-            {"id": "3", "name": "Hogar y Jardín", "slug": "hogar-jardin", "description": "Productos para el hogar y jardín", "parent_id": None, "order": 3, "is_active": True, "created_at": "2024-10-05T04:00:00Z", "updated_at": "2024-10-05T04:00:00Z"},
-            {"id": "4", "name": "Deportes", "slug": "deportes", "description": "Artículos deportivos y fitness", "parent_id": None, "order": 4, "is_active": True, "created_at": "2024-10-05T04:00:00Z", "updated_at": "2024-10-05T04:00:00Z"},
-            {"id": "5", "name": "Libros", "slug": "libros", "description": "Libros y material educativo", "parent_id": None, "order": 5, "is_active": True, "created_at": "2024-10-05T04:00:00Z", "updated_at": "2024-10-05T04:00:00Z"}
-        ]
-        
-        category = next((cat for cat in categories if cat['id'] == category_id), None)
-        
+        # Query category from database using psycopg2
+        query = """
+            SELECT id, name, slug, description, parent_id, "order", is_active, created_at, updated_at
+            FROM categories
+            WHERE id = %s
+        """
+
+        parameters = (int(category_id),)
+        category = execute_single_query(query, parameters)
+
         if not category:
             return not_found_response("Category not found")
-        
-        return success_response(category, "Category retrieved successfully from RDS infrastructure")
+
+        # Convert data types for JSON serialization
+        category['id'] = str(category['id'])
+        if category['parent_id']:
+            category['parent_id'] = str(category['parent_id'])
+        if category['created_at']:
+            category['created_at'] = category['created_at'].isoformat()
+        if category['updated_at']:
+            category['updated_at'] = category['updated_at'].isoformat()
+
+        return success_response(category, "Category retrieved successfully")
         
     except Exception as e:
         logger.error(f"Categories get error: {str(e)}")
@@ -78,7 +82,6 @@ def success_response(data: Any, message: str = "Success") -> Dict[str, Any]:
         'body': json.dumps({
             'data': data,
             'message': message,
-            'source': 'RDS Aurora PostgreSQL - Infrastructure Ready'
         })
     }
 

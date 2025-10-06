@@ -8,6 +8,11 @@ import logging
 import os
 import boto3
 from typing import Dict, Any
+import sys
+
+# Add parent directory to path to import db_utils
+sys.path.append('/var/task')
+from db_utils import execute_query
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -31,129 +36,35 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'body': ''
             }
         
-        # Get database configuration
-        db_config = {
-            'host': os.getenv('DB_HOST', 'localhost'),
-            'port': os.getenv('DB_PORT', '5432'),
-            'database': os.getenv('DB_NAME', 'gamarriando'),
-            'user': os.getenv('DB_USER', 'gamarriando'),
-            'password': os.getenv('DB_PASSWORD', 'gamarriando123')
-        }
+        # Query vendors from database
+        query = """
+            SELECT id, name, email, phone, address, description, is_active, 
+                   is_verified, rating, total_products, created_at, updated_at
+            FROM vendors 
+            ORDER BY name ASC
+        """
         
-        # Simulate database query with real data structure
-        vendors = [
-            {
-                "id": "1",
-                "name": "Tech Store Pro",
-                "email": "info@techstorepro.com",
-                "phone": "+1987654321",
-                "address": {
-                    "street": "456 Tech Avenue",
-                    "city": "Tech City",
-                    "state": "Tech State",
-                    "zip_code": "54321",
-                    "country": "Tech Country"
-                },
-                "description": "Especialistas en productos tecnológicos",
-                "is_active": True,
-                "is_verified": True,
-                "rating": 4.8,
-                "total_products": 150,
-                "created_at": "2024-10-05T04:00:00Z",
-                "updated_at": "2024-10-05T04:00:00Z"
-            },
-            {
-                "id": "2",
-                "name": "Fashion Hub",
-                "email": "contact@fashionhub.com",
-                "phone": "+1122334455",
-                "address": {
-                    "street": "789 Fashion Boulevard",
-                    "city": "Fashion City",
-                    "state": "Fashion State",
-                    "zip_code": "67890",
-                    "country": "Fashion Country"
-                },
-                "description": "Tu tienda de moda y estilo",
-                "is_active": True,
-                "is_verified": False,
-                "rating": 4.2,
-                "total_products": 75,
-                "created_at": "2024-10-05T04:00:00Z",
-                "updated_at": "2024-10-05T04:00:00Z"
-            },
-            {
-                "id": "3",
-                "name": "Home & Garden Plus",
-                "email": "info@homegardenplus.com",
-                "phone": "+1555666777",
-                "address": {
-                    "street": "321 Garden Street",
-                    "city": "Garden City",
-                    "state": "Garden State",
-                    "zip_code": "11111",
-                    "country": "Garden Country"
-                },
-                "description": "Todo para tu hogar y jardín",
-                "is_active": True,
-                "is_verified": True,
-                "rating": 4.6,
-                "total_products": 120,
-                "created_at": "2024-10-05T04:00:00Z",
-                "updated_at": "2024-10-05T04:00:00Z"
-            },
-            {
-                "id": "4",
-                "name": "Sports Central",
-                "email": "sales@sportscentral.com",
-                "phone": "+1999888777",
-                "address": {
-                    "street": "654 Sports Lane",
-                    "city": "Sports City",
-                    "state": "Sports State",
-                    "zip_code": "22222",
-                    "country": "Sports Country"
-                },
-                "description": "Equipamiento deportivo profesional",
-                "is_active": True,
-                "is_verified": True,
-                "rating": 4.7,
-                "total_products": 200,
-                "created_at": "2024-10-05T04:00:00Z",
-                "updated_at": "2024-10-05T04:00:00Z"
-            },
-            {
-                "id": "5",
-                "name": "Book World",
-                "email": "orders@bookworld.com",
-                "phone": "+1444333222",
-                "address": {
-                    "street": "987 Library Avenue",
-                    "city": "Book City",
-                    "state": "Book State",
-                    "zip_code": "33333",
-                    "country": "Book Country"
-                },
-                "description": "Tu librería online de confianza",
-                "is_active": True,
-                "is_verified": True,
-                "rating": 4.9,
-                "total_products": 300,
-                "created_at": "2024-10-05T04:00:00Z",
-                "updated_at": "2024-10-05T04:00:00Z"
-            }
-        ]
+        vendors_data = execute_query(query)
+        
+        # Convert data types for JSON serialization
+        for vendor in vendors_data:
+            vendor['id'] = str(vendor['id'])
+            # Convert Decimal fields to float for JSON serialization
+            if vendor.get('rating') is not None:
+                vendor['rating'] = float(vendor['rating'])
+            if vendor.get('total_products') is not None:
+                vendor['total_products'] = int(vendor['total_products'])
+            if vendor['created_at']:
+                vendor['created_at'] = vendor['created_at'].isoformat()
+            if vendor['updated_at']:
+                vendor['updated_at'] = vendor['updated_at'].isoformat()
+            if vendor['address'] is None:
+                vendor['address'] = {}
         
         return success_response({
-            'vendors': vendors,
-            'total': len(vendors),
-            'database': {
-                'host': db_config['host'],
-                'database': db_config['database'],
-                'status': 'RDS Aurora PostgreSQL - Infrastructure Ready',
-                'connection': 'VPC configured, Security Groups configured'
-            }
-        }, f"Retrieved {len(vendors)} vendors from RDS infrastructure")
+            'vendors': vendors_data,
+            'total': len(vendors_data)
+        }, f"Retrieved {len(vendors_data)} vendors")
         
     except Exception as e:
         logger.error(f"Vendors list error: {str(e)}")
@@ -169,8 +80,7 @@ def success_response(data: Any, message: str = "Success") -> Dict[str, Any]:
         },
         'body': json.dumps({
             'data': data,
-            'message': message,
-            'source': 'RDS Aurora PostgreSQL - Infrastructure Ready'
+            'message': message
         })
     }
 
