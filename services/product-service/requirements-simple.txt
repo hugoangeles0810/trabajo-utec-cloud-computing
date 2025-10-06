@@ -1,8 +1,5 @@
-# Simple requirements for Gamarriando Product Service
-# Only essential dependencies to avoid Lambda packaging issues
+# Minimal dependencies for Gamarriando Product Service Lambda
+# Only absolutely essential packages
 
-# AWS SDK (already available in Lambda runtime)
-# boto3==1.34.0
-
-# Basic utilities
-python-dotenv==1.0.0
+# Database dependencies (essential)
+psycopg2-binary==2.9.9

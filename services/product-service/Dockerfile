@@ -1,35 +1,18 @@
-FROM python:3.11-slim
+# Start from AWS Lambda Python 3.9 base image
+FROM public.ecr.aws/lambda/python:3.9
 
-# Set working directory
-WORKDIR /app
+# Copy requirements and install dependencies
+COPY requirements.txt ${LAMBDA_TASK_ROOT}
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    gcc \
-    g++ \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy requirements first for better caching
-COPY requirements.txt .
+# Install postgresql-devel and gcc (required for psycopg2 compilation)
+RUN yum install -y gcc postgresql-devel
 
 # Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip3 install -r requirements.txt --target "${LAMBDA_TASK_ROOT}"
 
-# Copy application code
-COPY . .
+# Copy the Lambda function code
+COPY handlers/ ${LAMBDA_TASK_ROOT}/handlers/
+COPY db_utils.py ${LAMBDA_TASK_ROOT}/
 
-# Create non-root user
-RUN useradd --create-home --shell /bin/bash app \
-    && chown -R app:app /app
-USER app
-
-# Expose port
-EXPOSE 8000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8000/health || exit 1
-
-# Default command
-CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Set the CMD to your handler
+CMD ["handlers/categories_list.lambda_handler"]

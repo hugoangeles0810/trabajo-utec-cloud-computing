@@ -23,9 +23,9 @@
     "lambda:invoke": "serverless invoke -f api",
     "lambda:invoke:local": "serverless invoke local -f api"
   },
-  "dependencies": {},
   "devDependencies": {
     "serverless": "^3.38.0",
+    "serverless-docker": "^0.0.5",
     "serverless-python-requirements": "^6.0.0"
   },
   "keywords": [
