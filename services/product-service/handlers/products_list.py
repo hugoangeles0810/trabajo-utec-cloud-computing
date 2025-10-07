@@ -30,7 +30,7 @@ def lambda_handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                 'statusCode': 200,
                 'headers': {
                     'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+                    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, X-Amz-Date, X-Api-Key, X-Amz-Security-Token',
                     'Access-Control-Allow-Methods': 'GET, OPTIONS'
                 },
                 'body': ''
@@ -122,7 +122,9 @@ def success_response(data: Any, message: str = "Success") -> Dict[str, Any]:
         'statusCode': 200,
         'headers': {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, X-Amz-Date, X-Api-Key, X-Amz-Security-Token',
+            'Access-Control-Allow-Methods': 'GET, OPTIONS'
         },
         'body': json.dumps({
             'data': data,
@@ -140,7 +142,9 @@ def error_response(message: str, status_code: int = 500, error: str = None) -> D
         'statusCode': status_code,
         'headers': {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, X-Amz-Date, X-Api-Key, X-Amz-Security-Token',
+            'Access-Control-Allow-Methods': 'GET, OPTIONS'
         },
         'body': json.dumps(response_data)
     }

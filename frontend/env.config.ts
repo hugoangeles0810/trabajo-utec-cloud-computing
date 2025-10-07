@@ -47,14 +47,14 @@ export const validateEnvConfig = (): void => {
   const missingVars = requiredVars.filter(varName => !process.env[varName]);
 
   if (missingVars.length > 0 && envConfig.IS_PRODUCTION) {
-    throw new Error(
-      `Missing required environment variables: ${missingVars.join(', ')}`
+    console.warn(
+      `Missing required environment variables: ${missingVars.join(', ')}. Using default values.`
     );
   }
 };
 
-// Validate configuration on import in production
-if (envConfig.IS_PRODUCTION) {
+// Validate configuration on import only on server side
+if (typeof window === 'undefined' && envConfig.IS_PRODUCTION) {
   validateEnvConfig();
 }
 

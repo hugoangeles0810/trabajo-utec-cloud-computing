@@ -57,30 +57,40 @@ export function FeaturedProducts({
   // Fetch products from API
   const { data: apiProducts, isLoading, error } = useFeaturedProducts(8);
 
-  // Default images for products
+  // Default placeholder images for products - gaming and streetwear focused
+  // These images are used when products don't have valid images from the API
   const defaultImages = [
-    'https://images.unsplash.com/photo-1556821840-3a63f95609a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    'https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    'https://images.unsplash.com/photo-1556821840-3a63f95609a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', // Gaming hoodie
+    'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', // Gaming setup
+    'https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', // Streetwear
+    'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', // Gaming accessories
+    'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', // Tech gadgets
+    'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', // Gaming peripherals
+    'https://images.unsplash.com/photo-1607082349566-187342175e2f?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', // Streetwear fashion
+    'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80', // Gaming merchandise
   ];
 
   // Transform API data to include UI properties
-  const products: ProductWithUI[] = apiProducts?.map((product, index) => ({
-    ...product,
-    image: product.images?.[0] || defaultImages[index % defaultImages.length],
-    rating: 4.5 + Math.random() * 0.5, // Mock rating between 4.5-5.0
-    reviewCount: Math.floor(Math.random() * 200) + 50, // Mock review count
-    isNew: index < 2, // First two products are "new"
-    isBestSeller: index === 1 || index === 3, // Second and fourth products are "best sellers"
-    isOnSale: index === 0 || index === 2, // First and third products are "on sale"
-    originalPrice: index === 0 || index === 2 ? product.price * 1.25 : undefined, // Mock original price for sale items
-    discount: index === 0 || index === 2 ? 20 : undefined, // Mock discount
-    category: 'Producto', // Mock category name
-    vendor: 'Vendor', // Mock vendor name
-  })) || [];
+  const products: ProductWithUI[] = apiProducts?.map((product, index) => {
+    // Use API image if available and valid, otherwise use placeholder
+    const hasValidImage = product.images && product.images.length > 0 && 
+                         product.images[0] && 
+                         !product.images[0].includes('example.com');
+    
+    return {
+      ...product,
+      image: hasValidImage ? product.images[0] : defaultImages[index % defaultImages.length],
+      rating: 4.5 + Math.random() * 0.5, // Mock rating between 4.5-5.0
+      reviewCount: Math.floor(Math.random() * 200) + 50, // Mock review count
+      isNew: index < 2, // First two products are "new"
+      isBestSeller: index === 1 || index === 3, // Second and fourth products are "best sellers"
+      isOnSale: index === 0 || index === 2, // First and third products are "on sale"
+      originalPrice: index === 0 || index === 2 ? product.price * 1.25 : undefined, // Mock original price for sale items
+      discount: index === 0 || index === 2 ? 20 : undefined, // Mock discount
+      category: 'Producto', // Mock category name
+      vendor: 'Vendor', // Mock vendor name
+    };
+  }) || [];
 
   // Mock products data (fallback)
   const mockProducts: ProductWithUI[] = [

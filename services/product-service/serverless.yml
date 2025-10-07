@@ -178,7 +178,29 @@ functions:
       - http:
           path: /api/v1/products
           method: GET
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Requested-With
+            allowCredentials: false
+      - http:
+          path: /api/v1/products
+          method: OPTIONS
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Requested-With
+            allowCredentials: false
 
   products_get:
     handler: handlers/products_get.lambda_handler
