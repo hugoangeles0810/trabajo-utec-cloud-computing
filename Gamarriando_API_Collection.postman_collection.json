@@ -1,0 +1,1634 @@
+{
+	"info": {
+		"_postman_id": "gamarriando-api-collection",
+		"name": "Gamarriando API Collection",
+		"description": "Complete API collection for Gamarriando e-commerce platform backend services",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "gamarriando"
+	},
+	"item": [
+		{
+			"name": "User Service",
+			"description": "Authentication and user management endpoints",
+			"item": [
+				{
+					"name": "Authentication",
+					"item": [
+						{
+							"name": "Register User",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"user@example.com\",\n  \"username\": \"testuser\",\n  \"password\": \"SecurePass123!\",\n  \"first_name\": \"John\",\n  \"last_name\": \"Doe\"\n}"
+								},
+								"url": {
+									"raw": "{{user_service_url}}/api/v1/auth/register",
+									"host": [
+										"{{user_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"register"
+									]
+								},
+								"description": "Register a new user account"
+							}
+						},
+						{
+							"name": "Login User",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"SecurePass123!\"\n}"
+								},
+								"url": {
+									"raw": "{{user_service_url}}/api/v1/auth/login",
+									"host": [
+										"{{user_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"login"
+									]
+								},
+								"description": "Authenticate user and get JWT tokens"
+							}
+						},
+						{
+							"name": "Logout User",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"
+								},
+								"url": {
+									"raw": "{{user_service_url}}/api/v1/auth/logout",
+									"host": [
+										"{{user_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"logout"
+									]
+								},
+								"description": "Logout user and invalidate tokens"
+							}
+						},
+						{
+							"name": "Refresh Token",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}"
+								},
+								"url": {
+									"raw": "{{user_service_url}}/api/v1/auth/refresh",
+									"host": [
+										"{{user_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"refresh"
+									]
+								},
+								"description": "Refresh access token using refresh token"
+							}
+						},
+						{
+							"name": "Forgot Password",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"user@example.com\"\n}"
+								},
+								"url": {
+									"raw": "{{user_service_url}}/api/v1/auth/forgot-password",
+									"host": [
+										"{{user_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"forgot-password"
+									]
+								},
+								"description": "Request password reset email"
+							}
+						},
+						{
+							"name": "Reset Password",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"token\": \"reset_token_here\",\n  \"new_password\": \"NewSecurePass123!\"\n}"
+								},
+								"url": {
+									"raw": "{{user_service_url}}/api/v1/auth/reset-password",
+									"host": [
+										"{{user_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"auth",
+										"reset-password"
+									]
+								},
+								"description": "Reset password using reset token"
+							}
+						}
+					]
+				},
+				{
+					"name": "User Management",
+					"item": [
+						{
+							"name": "Create User (Admin)",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"newuser@example.com\",\n  \"username\": \"newuser\",\n  \"password\": \"SecurePass123!\",\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Smith\"\n}"
+								},
+								"url": {
+									"raw": "{{user_service_url}}/api/v1/users",
+									"host": [
+										"{{user_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users"
+									]
+								},
+								"description": "Create a new user (admin only)"
+							}
+						},
+						{
+							"name": "Get User Profile",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{user_service_url}}/api/v1/users/me",
+									"host": [
+										"{{user_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"me"
+									]
+								},
+								"description": "Get current user profile"
+							}
+						},
+						{
+							"name": "Get User by ID",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{user_service_url}}/api/v1/users/{{user_id}}",
+									"host": [
+										"{{user_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"{{user_id}}"
+									]
+								},
+								"description": "Get user by ID"
+							}
+						},
+						{
+							"name": "List Users",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{user_service_url}}/api/v1/users?skip=0&limit=10",
+									"host": [
+										"{{user_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users"
+									],
+									"query": [
+										{
+											"key": "skip",
+											"value": "0"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										}
+									]
+								},
+								"description": "List all users with pagination"
+							}
+						},
+						{
+							"name": "Update User",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"first_name\": \"Updated Name\",\n  \"last_name\": \"Updated Lastname\",\n  \"email\": \"updated@example.com\"\n}"
+								},
+								"url": {
+									"raw": "{{user_service_url}}/api/v1/users/{{user_id}}",
+									"host": [
+										"{{user_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"{{user_id}}"
+									]
+								},
+								"description": "Update user information"
+							}
+						},
+						{
+							"name": "Delete User",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{user_service_url}}/api/v1/users/{{user_id}}",
+									"host": [
+										"{{user_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"{{user_id}}"
+									]
+								},
+								"description": "Delete user account"
+							}
+						},
+						{
+							"name": "Verify Email",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"verification_token\": \"verification_token_here\"\n}"
+								},
+								"url": {
+									"raw": "{{user_service_url}}/api/v1/users/{{user_id}}/verify-email",
+									"host": [
+										"{{user_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"{{user_id}}",
+										"verify-email"
+									]
+								},
+								"description": "Verify user email address"
+							}
+						},
+						{
+							"name": "Change Password",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"current_password\": \"CurrentPass123!\",\n  \"new_password\": \"NewSecurePass123!\"\n}"
+								},
+								"url": {
+									"raw": "{{user_service_url}}/api/v1/users/{{user_id}}/change-password",
+									"host": [
+										"{{user_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"{{user_id}}",
+										"change-password"
+									]
+								},
+								"description": "Change user password"
+							}
+						}
+					]
+				},
+				{
+					"name": "Role Management",
+					"item": [
+						{
+							"name": "Assign Role",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"role_id\": \"{{role_id}}\"\n}"
+								},
+								"url": {
+									"raw": "{{user_service_url}}/api/v1/users/{{user_id}}/roles",
+									"host": [
+										"{{user_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"{{user_id}}",
+										"roles"
+									]
+								},
+								"description": "Assign role to user"
+							}
+						},
+						{
+							"name": "Remove Role",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{user_service_url}}/api/v1/users/{{user_id}}/roles/{{role_id}}",
+									"host": [
+										"{{user_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"{{user_id}}",
+										"roles",
+										"{{role_id}}"
+									]
+								},
+								"description": "Remove role from user"
+							}
+						},
+						{
+							"name": "List User Roles",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{user_service_url}}/api/v1/users/{{user_id}}/roles",
+									"host": [
+										"{{user_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"{{user_id}}",
+										"roles"
+									]
+								},
+								"description": "List roles assigned to user"
+							}
+						},
+						{
+							"name": "List All Roles",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{user_service_url}}/api/v1/roles",
+									"host": [
+										"{{user_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"roles"
+									]
+								},
+								"description": "List all available roles"
+							}
+						}
+					]
+				},
+				{
+					"name": "Session Management",
+					"item": [
+						{
+							"name": "List User Sessions",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{user_service_url}}/api/v1/users/{{user_id}}/sessions",
+									"host": [
+										"{{user_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"{{user_id}}",
+										"sessions"
+									]
+								},
+								"description": "List all sessions for a user"
+							}
+						},
+						{
+							"name": "Revoke Session",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{user_service_url}}/api/v1/sessions/{{session_id}}",
+									"host": [
+										"{{user_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"sessions",
+										"{{session_id}}"
+									]
+								},
+								"description": "Revoke a specific session"
+							}
+						},
+						{
+							"name": "Revoke All Sessions",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{user_service_url}}/api/v1/users/{{user_id}}/sessions",
+									"host": [
+										"{{user_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"users",
+										"{{user_id}}",
+										"sessions"
+									]
+								},
+								"description": "Revoke all sessions for a user"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Product Service",
+			"description": "Product catalog, categories, and vendor management",
+			"item": [
+				{
+					"name": "Categories",
+					"item": [
+						{
+							"name": "List Categories",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{product_service_url}}/api/v1/categories?skip=0&limit=10",
+									"host": [
+										"{{product_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"categories"
+									],
+									"query": [
+										{
+											"key": "skip",
+											"value": "0"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										}
+									]
+								},
+								"description": "List all product categories"
+							}
+						},
+						{
+							"name": "Get Category",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{product_service_url}}/api/v1/categories/{{category_id}}",
+									"host": [
+										"{{product_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"categories",
+										"{{category_id}}"
+									]
+								},
+								"description": "Get category by ID"
+							}
+						},
+						{
+							"name": "Create Category",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Electronics\",\n  \"description\": \"Electronic devices and accessories\",\n  \"parent_id\": null\n}"
+								},
+								"url": {
+									"raw": "{{product_service_url}}/api/v1/categories",
+									"host": [
+										"{{product_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"categories"
+									]
+								},
+								"description": "Create a new category"
+							}
+						},
+						{
+							"name": "Update Category",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Updated Electronics\",\n  \"description\": \"Updated description for electronic devices\"\n}"
+								},
+								"url": {
+									"raw": "{{product_service_url}}/api/v1/categories/{{category_id}}",
+									"host": [
+										"{{product_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"categories",
+										"{{category_id}}"
+									]
+								},
+								"description": "Update category information"
+							}
+						},
+						{
+							"name": "Delete Category",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{product_service_url}}/api/v1/categories/{{category_id}}",
+									"host": [
+										"{{product_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"categories",
+										"{{category_id}}"
+									]
+								},
+								"description": "Delete a category"
+							}
+						}
+					]
+				},
+				{
+					"name": "Vendors",
+					"item": [
+						{
+							"name": "List Vendors",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{product_service_url}}/api/v1/vendors?skip=0&limit=10",
+									"host": [
+										"{{product_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"vendors"
+									],
+									"query": [
+										{
+											"key": "skip",
+											"value": "0"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										}
+									]
+								},
+								"description": "List all vendors"
+							}
+						},
+						{
+							"name": "Get Vendor",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{product_service_url}}/api/v1/vendors/{{vendor_id}}",
+									"host": [
+										"{{product_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"vendors",
+										"{{vendor_id}}"
+									]
+								},
+								"description": "Get vendor by ID"
+							}
+						},
+						{
+							"name": "Create Vendor",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"TechCorp Inc.\",\n  \"description\": \"Leading technology vendor\",\n  \"contact_email\": \"contact@techcorp.com\",\n  \"contact_phone\": \"+1-555-0123\",\n  \"address\": \"123 Tech Street, Silicon Valley, CA 94000\"\n}"
+								},
+								"url": {
+									"raw": "{{product_service_url}}/api/v1/vendors",
+									"host": [
+										"{{product_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"vendors"
+									]
+								},
+								"description": "Create a new vendor"
+							}
+						},
+						{
+							"name": "Update Vendor",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Updated TechCorp Inc.\",\n  \"description\": \"Updated description\",\n  \"contact_email\": \"newcontact@techcorp.com\"\n}"
+								},
+								"url": {
+									"raw": "{{product_service_url}}/api/v1/vendors/{{vendor_id}}",
+									"host": [
+										"{{product_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"vendors",
+										"{{vendor_id}}"
+									]
+								},
+								"description": "Update vendor information"
+							}
+						},
+						{
+							"name": "Delete Vendor",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{product_service_url}}/api/v1/vendors/{{vendor_id}}",
+									"host": [
+										"{{product_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"vendors",
+										"{{vendor_id}}"
+									]
+								},
+								"description": "Delete a vendor"
+							}
+						}
+					]
+				},
+				{
+					"name": "Products",
+					"item": [
+						{
+							"name": "List Products",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{product_service_url}}/api/v1/products?skip=0&limit=10&category_id={{category_id}}&vendor_id={{vendor_id}}&status=active",
+									"host": [
+										"{{product_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"products"
+									],
+									"query": [
+										{
+											"key": "skip",
+											"value": "0"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "category_id",
+											"value": "{{category_id}}"
+										},
+										{
+											"key": "vendor_id",
+											"value": "{{vendor_id}}"
+										},
+										{
+											"key": "status",
+											"value": "active"
+										}
+									]
+								},
+								"description": "List all products with optional filters"
+							}
+						},
+						{
+							"name": "Get Product",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{product_service_url}}/api/v1/products/{{product_id}}",
+									"host": [
+										"{{product_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"products",
+										"{{product_id}}"
+									]
+								},
+								"description": "Get product by ID"
+							}
+						},
+						{
+							"name": "Create Product",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"iPhone 15 Pro\",\n  \"description\": \"Latest iPhone with advanced features\",\n  \"price\": 999.99,\n  \"category_id\": {{category_id}},\n  \"vendor_id\": {{vendor_id}},\n  \"stock_quantity\": 100,\n  \"sku\": \"IPH15PRO001\",\n  \"status\": \"active\",\n  \"images\": [\"https://example.com/image1.jpg\", \"https://example.com/image2.jpg\"]\n}"
+								},
+								"url": {
+									"raw": "{{product_service_url}}/api/v1/products",
+									"host": [
+										"{{product_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"products"
+									]
+								},
+								"description": "Create a new product"
+							}
+						},
+						{
+							"name": "Update Product",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"iPhone 15 Pro Max\",\n  \"description\": \"Updated description\",\n  \"price\": 1099.99,\n  \"stock_quantity\": 150\n}"
+								},
+								"url": {
+									"raw": "{{product_service_url}}/api/v1/products/{{product_id}}",
+									"host": [
+										"{{product_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"products",
+										"{{product_id}}"
+									]
+								},
+								"description": "Update product information"
+							}
+						},
+						{
+							"name": "Delete Product",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{product_service_url}}/api/v1/products/{{product_id}}",
+									"host": [
+										"{{product_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"products",
+										"{{product_id}}"
+									]
+								},
+								"description": "Delete a product"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Payment Service",
+			"description": "Order processing, payments, and transaction management",
+			"item": [
+				{
+					"name": "Orders",
+					"item": [
+						{
+							"name": "Create Order",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"user_id\": {{user_id}},\n  \"items\": [\n    {\n      \"product_id\": {{product_id}},\n      \"quantity\": 2,\n      \"price\": 999.99\n    }\n  ],\n  \"shipping_address\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"New York\",\n    \"state\": \"NY\",\n    \"zip_code\": \"10001\",\n    \"country\": \"USA\"\n  },\n  \"billing_address\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"New York\",\n    \"state\": \"NY\",\n    \"zip_code\": \"10001\",\n    \"country\": \"USA\"\n  }\n}"
+								},
+								"url": {
+									"raw": "{{payment_service_url}}/api/v1/orders",
+									"host": [
+										"{{payment_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"orders"
+									]
+								},
+								"description": "Create a new order"
+							}
+						},
+						{
+							"name": "Get Order",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{payment_service_url}}/api/v1/orders/{{order_id}}",
+									"host": [
+										"{{payment_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"orders",
+										"{{order_id}}"
+									]
+								},
+								"description": "Get order by ID"
+							}
+						},
+						{
+							"name": "List Orders",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{payment_service_url}}/api/v1/orders?skip=0&limit=10&user_id={{user_id}}&status=pending",
+									"host": [
+										"{{payment_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"orders"
+									],
+									"query": [
+										{
+											"key": "skip",
+											"value": "0"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "user_id",
+											"value": "{{user_id}}"
+										},
+										{
+											"key": "status",
+											"value": "pending"
+										}
+									]
+								},
+								"description": "List orders with optional filters"
+							}
+						},
+						{
+							"name": "Update Order",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"status\": \"confirmed\",\n  \"shipping_address\": {\n    \"street\": \"456 Updated St\",\n    \"city\": \"Updated City\",\n    \"state\": \"CA\",\n    \"zip_code\": \"90210\",\n    \"country\": \"USA\"\n  }\n}"
+								},
+								"url": {
+									"raw": "{{payment_service_url}}/api/v1/orders/{{order_id}}",
+									"host": [
+										"{{payment_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"orders",
+										"{{order_id}}"
+									]
+								},
+								"description": "Update order information"
+							}
+						},
+						{
+							"name": "Delete Order",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{payment_service_url}}/api/v1/orders/{{order_id}}",
+									"host": [
+										"{{payment_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"orders",
+										"{{order_id}}"
+									]
+								},
+								"description": "Delete an order"
+							}
+						}
+					]
+				},
+				{
+					"name": "Payments",
+					"item": [
+						{
+							"name": "Create Payment",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"order_id\": {{order_id}},\n  \"amount\": 1999.98,\n  \"payment_method\": \"credit_card\",\n  \"payment_details\": {\n    \"card_number\": \"4111111111111111\",\n    \"expiry_month\": \"12\",\n    \"expiry_year\": \"2025\",\n    \"cvv\": \"123\",\n    \"cardholder_name\": \"John Doe\"\n  }\n}"
+								},
+								"url": {
+									"raw": "{{payment_service_url}}/api/v1/payments",
+									"host": [
+										"{{payment_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"payments"
+									]
+								},
+								"description": "Create a new payment"
+							}
+						},
+						{
+							"name": "Get Payment",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{payment_service_url}}/api/v1/payments/{{payment_id}}",
+									"host": [
+										"{{payment_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"payments",
+										"{{payment_id}}"
+									]
+								},
+								"description": "Get payment by ID"
+							}
+						},
+						{
+							"name": "List Payments",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{payment_service_url}}/api/v1/payments?skip=0&limit=10&order_id={{order_id}}&status=completed",
+									"host": [
+										"{{payment_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"payments"
+									],
+									"query": [
+										{
+											"key": "skip",
+											"value": "0"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "order_id",
+											"value": "{{order_id}}"
+										},
+										{
+											"key": "status",
+											"value": "completed"
+										}
+									]
+								},
+								"description": "List payments with optional filters"
+							}
+						},
+						{
+							"name": "Update Payment",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"status\": \"processing\",\n  \"notes\": \"Payment is being processed\"\n}"
+								},
+								"url": {
+									"raw": "{{payment_service_url}}/api/v1/payments/{{payment_id}}",
+									"host": [
+										"{{payment_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"payments",
+										"{{payment_id}}"
+									]
+								},
+								"description": "Update payment information"
+							}
+						},
+						{
+							"name": "Delete Payment",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{payment_service_url}}/api/v1/payments/{{payment_id}}",
+									"host": [
+										"{{payment_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"payments",
+										"{{payment_id}}"
+									]
+								},
+								"description": "Delete a payment"
+							}
+						},
+						{
+							"name": "Process Payment",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"payment_gateway\": \"stripe\",\n  \"gateway_transaction_id\": \"txn_123456789\"\n}"
+								},
+								"url": {
+									"raw": "{{payment_service_url}}/api/v1/payments/{{payment_id}}/process",
+									"host": [
+										"{{payment_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"payments",
+										"{{payment_id}}",
+										"process"
+									]
+								},
+								"description": "Process a payment through payment gateway"
+							}
+						},
+						{
+							"name": "Refund Payment",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"refund_amount\": 199.99,\n  \"reason\": \"Customer requested refund\"\n}"
+								},
+								"url": {
+									"raw": "{{payment_service_url}}/api/v1/payments/{{payment_id}}/refund",
+									"host": [
+										"{{payment_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"payments",
+										"{{payment_id}}",
+										"refund"
+									]
+								},
+								"description": "Refund a payment"
+							}
+						}
+					]
+				},
+				{
+					"name": "Transactions",
+					"item": [
+						{
+							"name": "Create Transaction",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"payment_id\": {{payment_id}},\n  \"transaction_type\": \"charge\",\n  \"amount\": 1999.98,\n  \"gateway\": \"stripe\",\n  \"gateway_transaction_id\": \"txn_123456789\",\n  \"status\": \"completed\"\n}"
+								},
+								"url": {
+									"raw": "{{payment_service_url}}/api/v1/transactions",
+									"host": [
+										"{{payment_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"transactions"
+									]
+								},
+								"description": "Create a new transaction record"
+							}
+						},
+						{
+							"name": "Get Transaction",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{payment_service_url}}/api/v1/transactions/{{transaction_id}}",
+									"host": [
+										"{{payment_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"transactions",
+										"{{transaction_id}}"
+									]
+								},
+								"description": "Get transaction by ID"
+							}
+						},
+						{
+							"name": "List Transactions",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{access_token}}"
+									}
+								],
+								"url": {
+									"raw": "{{payment_service_url}}/api/v1/transactions?skip=0&limit=10&payment_id={{payment_id}}&status=completed",
+									"host": [
+										"{{payment_service_url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"transactions"
+									],
+									"query": [
+										{
+											"key": "skip",
+											"value": "0"
+										},
+										{
+											"key": "limit",
+											"value": "10"
+										},
+										{
+											"key": "payment_id",
+											"value": "{{payment_id}}"
+										},
+										{
+											"key": "status",
+											"value": "completed"
+										}
+									]
+								},
+								"description": "List transactions with optional filters"
+							}
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "user_service_url",
+			"value": "https://dhvvlfhyo7.execute-api.us-east-1.amazonaws.com/dev",
+			"type": "string"
+		},
+		{
+			"key": "product_service_url",
+			"value": "https://nq0kfvcazc.execute-api.us-east-1.amazonaws.com/dev",
+			"type": "string"
+		},
+		{
+			"key": "payment_service_url",
+			"value": "https://3abc01k7p0.execute-api.us-east-1.amazonaws.com/dev",
+			"type": "string"
+		}
+	]
+}
