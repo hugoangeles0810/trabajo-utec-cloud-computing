@@ -1,0 +1,345 @@
+/* Spacing system CSS variables for Gamarriando Frontend */
+/* Based on 4px grid system for consistent spacing */
+
+:root {
+  /* Base spacing scale */
+  --spacing-px: 1px;
+  --spacing-0: 0px;
+  --spacing-0-5: 0.125rem; /* 2px */
+  --spacing-1: 0.25rem; /* 4px */
+  --spacing-1-5: 0.375rem; /* 6px */
+  --spacing-2: 0.5rem; /* 8px */
+  --spacing-2-5: 0.625rem; /* 10px */
+  --spacing-3: 0.75rem; /* 12px */
+  --spacing-3-5: 0.875rem; /* 14px */
+  --spacing-4: 1rem; /* 16px */
+  --spacing-5: 1.25rem; /* 20px */
+  --spacing-6: 1.5rem; /* 24px */
+  --spacing-7: 1.75rem; /* 28px */
+  --spacing-8: 2rem; /* 32px */
+  --spacing-9: 2.25rem; /* 36px */
+  --spacing-10: 2.5rem; /* 40px */
+  --spacing-11: 2.75rem; /* 44px */
+  --spacing-12: 3rem; /* 48px */
+  --spacing-14: 3.5rem; /* 56px */
+  --spacing-16: 4rem; /* 64px */
+  --spacing-20: 5rem; /* 80px */
+  --spacing-24: 6rem; /* 96px */
+  --spacing-28: 7rem; /* 112px */
+  --spacing-32: 8rem; /* 128px */
+  --spacing-36: 9rem; /* 144px */
+  --spacing-40: 10rem; /* 160px */
+  --spacing-44: 11rem; /* 176px */
+  --spacing-48: 12rem; /* 192px */
+  --spacing-52: 13rem; /* 208px */
+  --spacing-56: 14rem; /* 224px */
+  --spacing-60: 15rem; /* 240px */
+  --spacing-64: 16rem; /* 256px */
+  --spacing-72: 18rem; /* 288px */
+  --spacing-80: 20rem; /* 320px */
+  --spacing-96: 24rem; /* 384px */
+
+  /* Custom spacing */
+  --spacing-18: 4.5rem; /* 72px */
+  --spacing-88: 22rem; /* 352px */
+  --spacing-128: 32rem; /* 512px */
+  --spacing-144: 36rem; /* 576px */
+  --spacing-160: 40rem; /* 640px */
+  --spacing-176: 44rem; /* 704px */
+  --spacing-192: 48rem; /* 768px */
+  --spacing-208: 52rem; /* 832px */
+  --spacing-224: 56rem; /* 896px */
+  --spacing-240: 60rem; /* 960px */
+  --spacing-256: 64rem; /* 1024px */
+
+  /* Semantic spacing */
+  --spacing-component-tight: var(--spacing-1); /* 4px */
+  --spacing-component-normal: var(--spacing-2); /* 8px */
+  --spacing-component-relaxed: var(--spacing-4); /* 16px */
+  --spacing-component-loose: var(--spacing-6); /* 24px */
+
+  --spacing-layout-section: var(--spacing-16); /* 64px */
+  --spacing-layout-container: var(--spacing-8); /* 32px */
+  --spacing-layout-grid: var(--spacing-6); /* 24px */
+  --spacing-layout-card: var(--spacing-4); /* 16px */
+
+  --spacing-form-field: var(--spacing-3); /* 12px */
+  --spacing-form-group: var(--spacing-6); /* 24px */
+  --spacing-form-section: var(--spacing-8); /* 32px */
+
+  --spacing-nav-item: var(--spacing-4); /* 16px */
+  --spacing-nav-group: var(--spacing-6); /* 24px */
+  --spacing-nav-section: var(--spacing-8); /* 32px */
+
+  --spacing-product-grid: var(--spacing-6); /* 24px */
+  --spacing-product-card: var(--spacing-4); /* 16px */
+  --spacing-product-detail: var(--spacing-8); /* 32px */
+
+  /* Spacing combinations */
+  --spacing-button-padding-sm: var(--spacing-2) var(--spacing-3); /* py-2 px-3 */
+  --spacing-button-padding-md: var(--spacing-2) var(--spacing-4); /* py-2 px-4 */
+  --spacing-button-padding-lg: var(--spacing-3) var(--spacing-6); /* py-3 px-6 */
+  --spacing-button-gap: var(--spacing-2); /* 8px */
+
+  --spacing-input-padding: var(--spacing-2) var(--spacing-3); /* py-2 px-3 */
+  --spacing-input-icon-padding: var(--spacing-10); /* 40px */
+  --spacing-input-gap: var(--spacing-1); /* 4px */
+
+  --spacing-modal-padding: var(--spacing-6); /* 24px */
+  --spacing-modal-header: var(--spacing-6); /* 24px */
+  --spacing-modal-content: var(--spacing-6); /* 24px */
+  --spacing-modal-footer: var(--spacing-6); /* 24px */
+
+  --spacing-card-padding-sm: var(--spacing-3); /* 12px */
+  --spacing-card-padding-md: var(--spacing-4); /* 16px */
+  --spacing-card-padding-lg: var(--spacing-6); /* 24px */
+  --spacing-card-gap: var(--spacing-4); /* 16px */
+}
+
+/* Spacing utility classes */
+.spacing-section {
+  padding: var(--spacing-layout-section) var(--spacing-4);
+}
+
+.spacing-container {
+  padding: var(--spacing-layout-container);
+}
+
+.spacing-card {
+  padding: var(--spacing-layout-card);
+}
+
+.spacing-form {
+  padding: var(--spacing-form-section);
+}
+
+.spacing-modal {
+  padding: var(--spacing-modal-padding);
+}
+
+.spacing-button {
+  padding: var(--spacing-button-padding-md);
+}
+
+.spacing-button-sm {
+  padding: var(--spacing-button-padding-sm);
+}
+
+.spacing-button-lg {
+  padding: var(--spacing-button-padding-lg);
+}
+
+.spacing-input {
+  padding: var(--spacing-input-padding);
+}
+
+.spacing-input-icon {
+  padding-left: var(--spacing-input-icon-padding);
+}
+
+.spacing-card-sm {
+  padding: var(--spacing-card-padding-sm);
+}
+
+.spacing-card-md {
+  padding: var(--spacing-card-padding-md);
+}
+
+.spacing-card-lg {
+  padding: var(--spacing-card-padding-lg);
+}
+
+/* Gap utilities */
+.gap-component-tight {
+  gap: var(--spacing-component-tight);
+}
+
+.gap-component-normal {
+  gap: var(--spacing-component-normal);
+}
+
+.gap-component-relaxed {
+  gap: var(--spacing-component-relaxed);
+}
+
+.gap-component-loose {
+  gap: var(--spacing-component-loose);
+}
+
+.gap-layout-grid {
+  gap: var(--spacing-layout-grid);
+}
+
+.gap-product-grid {
+  gap: var(--spacing-product-grid);
+}
+
+.gap-form {
+  gap: var(--spacing-form-group);
+}
+
+.gap-nav {
+  gap: var(--spacing-nav-item);
+}
+
+/* Stack utilities (vertical spacing) */
+.stack-tight > * + * {
+  margin-top: var(--spacing-2);
+}
+
+.stack-normal > * + * {
+  margin-top: var(--spacing-4);
+}
+
+.stack-relaxed > * + * {
+  margin-top: var(--spacing-6);
+}
+
+.stack-loose > * + * {
+  margin-top: var(--spacing-8);
+}
+
+/* Horizontal stack utilities */
+.stack-h-tight > * + * {
+  margin-left: var(--spacing-2);
+}
+
+.stack-h-normal > * + * {
+  margin-left: var(--spacing-4);
+}
+
+.stack-h-relaxed > * + * {
+  margin-left: var(--spacing-6);
+}
+
+.stack-h-loose > * + * {
+  margin-left: var(--spacing-8);
+}
+
+/* Responsive spacing */
+@media (min-width: 640px) {
+  .spacing-section {
+    padding: var(--spacing-12) var(--spacing-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .spacing-section {
+    padding: var(--spacing-16) var(--spacing-8);
+  }
+}
+
+/* Container spacing */
+.container-spacing {
+  padding-left: var(--spacing-4);
+  padding-right: var(--spacing-4);
+}
+
+@media (min-width: 640px) {
+  .container-spacing {
+    padding-left: var(--spacing-6);
+    padding-right: var(--spacing-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-spacing {
+    padding-left: var(--spacing-8);
+    padding-right: var(--spacing-8);
+  }
+}
+
+/* Section spacing */
+.section-spacing {
+  padding-top: var(--spacing-8);
+  padding-bottom: var(--spacing-8);
+}
+
+@media (min-width: 640px) {
+  .section-spacing {
+    padding-top: var(--spacing-12);
+    padding-bottom: var(--spacing-12);
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-spacing {
+    padding-top: var(--spacing-16);
+    padding-bottom: var(--spacing-16);
+  }
+}
+
+/* Grid spacing */
+.grid-spacing {
+  gap: var(--spacing-4);
+}
+
+@media (min-width: 640px) {
+  .grid-spacing {
+    gap: var(--spacing-6);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-spacing {
+    gap: var(--spacing-8);
+  }
+}
+
+/* Form spacing */
+.form-spacing > * + * {
+  margin-top: var(--spacing-form-field);
+}
+
+.form-group-spacing > * + * {
+  margin-top: var(--spacing-form-group);
+}
+
+.form-section-spacing > * + * {
+  margin-top: var(--spacing-form-section);
+}
+
+/* Navigation spacing */
+.nav-spacing > * + * {
+  margin-left: var(--spacing-nav-item);
+}
+
+.nav-group-spacing > * + * {
+  margin-left: var(--spacing-nav-group);
+}
+
+.nav-section-spacing > * + * {
+  margin-left: var(--spacing-nav-section);
+}
+
+/* Product spacing */
+.product-grid-spacing {
+  gap: var(--spacing-product-grid);
+}
+
+.product-card-spacing {
+  padding: var(--spacing-product-card);
+}
+
+.product-detail-spacing {
+  padding: var(--spacing-product-detail);
+}
+
+/* Print spacing adjustments */
+@media print {
+  .spacing-section,
+  .section-spacing {
+    padding: var(--spacing-4);
+  }
+
+  .spacing-container,
+  .container-spacing {
+    padding: var(--spacing-2);
+  }
+
+  .spacing-card,
+  .spacing-card-md,
+  .spacing-card-lg {
+    padding: var(--spacing-2);
+  }
+}

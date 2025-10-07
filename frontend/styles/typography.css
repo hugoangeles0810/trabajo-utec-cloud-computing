@@ -1,0 +1,313 @@
+/* Typography system CSS variables for Gamarriando Frontend */
+
+:root {
+  /* Font Families */
+  --font-family-sans:
+    Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-family-mono:
+    'JetBrains Mono', 'Fira Code', Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+  --font-family-display: Inter, system-ui, sans-serif;
+
+  /* Font Sizes */
+  --font-size-display-2xl: 4.5rem;
+  --font-size-display-xl: 3.75rem;
+  --font-size-display-lg: 3rem;
+  --font-size-display-md: 2.25rem;
+  --font-size-display-sm: 1.875rem;
+  --font-size-display-xs: 1.5rem;
+
+  --font-size-text-xl: 1.25rem;
+  --font-size-text-lg: 1.125rem;
+  --font-size-text-md: 1rem;
+  --font-size-text-sm: 0.875rem;
+  --font-size-text-xs: 0.75rem;
+
+  /* Font Weights */
+  --font-weight-thin: 100;
+  --font-weight-extralight: 200;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-weight-black: 900;
+
+  /* Line Heights */
+  --line-height-none: 1;
+  --line-height-tight: 1.25;
+  --line-height-snug: 1.375;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.625;
+  --line-height-loose: 2;
+
+  /* Letter Spacing */
+  --letter-spacing-tighter: -0.05em;
+  --letter-spacing-tight: -0.025em;
+  --letter-spacing-normal: 0em;
+  --letter-spacing-wide: 0.025em;
+  --letter-spacing-wider: 0.05em;
+  --letter-spacing-widest: 0.1em;
+
+  /* Typography Scale Combinations */
+  --typography-display-2xl: var(--font-size-display-2xl) /
+    var(--line-height-tight) var(--font-family-display);
+  --typography-display-xl: var(--font-size-display-xl) /
+    var(--line-height-tight) var(--font-family-display);
+  --typography-display-lg: var(--font-size-display-lg) / var(--line-height-snug)
+    var(--font-family-display);
+  --typography-display-md: var(--font-size-display-md) / var(--line-height-snug)
+    var(--font-family-display);
+  --typography-display-sm: var(--font-size-display-sm) / var(--line-height-snug)
+    var(--font-family-display);
+  --typography-display-xs: var(--font-size-display-xs) /
+    var(--line-height-normal) var(--font-family-display);
+
+  --typography-text-xl: var(--font-size-text-xl) / var(--line-height-normal)
+    var(--font-family-sans);
+  --typography-text-lg: var(--font-size-text-lg) / var(--line-height-normal)
+    var(--font-family-sans);
+  --typography-text-md: var(--font-size-text-md) / var(--line-height-normal)
+    var(--font-family-sans);
+  --typography-text-sm: var(--font-size-text-sm) / var(--line-height-normal)
+    var(--font-family-sans);
+  --typography-text-xs: var(--font-size-text-xs) / var(--line-height-normal)
+    var(--font-family-sans);
+}
+
+/* Typography utility classes */
+.font-display-2xl {
+  font: var(--typography-display-2xl);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.font-display-xl {
+  font: var(--typography-display-xl);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.font-display-lg {
+  font: var(--typography-display-lg);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.font-display-md {
+  font: var(--typography-display-md);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+.font-display-sm {
+  font: var(--typography-display-sm);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--letter-spacing-normal);
+}
+
+.font-display-xs {
+  font: var(--typography-display-xs);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-normal);
+}
+
+.font-text-xl {
+  font: var(--typography-text-xl);
+  font-weight: var(--font-weight-normal);
+}
+
+.font-text-lg {
+  font: var(--typography-text-lg);
+  font-weight: var(--font-weight-normal);
+}
+
+.font-text-md {
+  font: var(--typography-text-md);
+  font-weight: var(--font-weight-normal);
+}
+
+.font-text-sm {
+  font: var(--typography-text-sm);
+  font-weight: var(--font-weight-normal);
+}
+
+.font-text-xs {
+  font: var(--typography-text-xs);
+  font-weight: var(--font-weight-normal);
+  letter-spacing: var(--letter-spacing-wide);
+}
+
+/* Heading styles */
+.heading-1 {
+  @apply font-display-2xl text-neutral-900;
+}
+
+.heading-2 {
+  @apply font-display-xl text-neutral-900;
+}
+
+.heading-3 {
+  @apply font-display-lg text-neutral-900;
+}
+
+.heading-4 {
+  @apply font-display-md text-neutral-900;
+}
+
+.heading-5 {
+  @apply font-display-sm text-neutral-900;
+}
+
+.heading-6 {
+  @apply font-display-xs text-neutral-900;
+}
+
+/* Body text styles */
+.body-large {
+  @apply font-text-xl text-neutral-700;
+}
+
+.body-medium {
+  @apply font-text-md text-neutral-700;
+}
+
+.body-small {
+  @apply font-text-sm text-neutral-600;
+}
+
+/* Caption styles */
+.caption {
+  @apply font-text-xs text-neutral-500 font-medium;
+}
+
+.caption-large {
+  @apply font-text-sm text-neutral-500 font-medium;
+}
+
+/* Label styles */
+.label {
+  @apply font-text-sm text-neutral-700 font-medium;
+}
+
+.label-small {
+  @apply font-text-xs text-neutral-700 font-medium;
+}
+
+/* Button text styles */
+.button-large {
+  @apply font-text-lg font-medium;
+}
+
+.button-medium {
+  @apply font-text-md font-medium;
+}
+
+.button-small {
+  @apply font-text-sm font-medium;
+}
+
+/* Link styles */
+.link {
+  @apply font-text-md text-primary-500 hover:text-primary-600 underline-offset-4 hover:underline transition-colors;
+}
+
+.link-small {
+  @apply font-text-sm text-primary-500 hover:text-primary-600 underline-offset-4 hover:underline transition-colors;
+}
+
+/* Code styles */
+.code {
+  @apply font-mono text-sm bg-neutral-100 px-1.5 py-0.5 rounded text-neutral-800;
+}
+
+.code-block {
+  @apply font-mono text-sm bg-neutral-900 text-neutral-100 p-4 rounded-lg overflow-x-auto;
+}
+
+/* Quote styles */
+.quote {
+  @apply font-text-lg text-neutral-600 italic border-l-4 border-primary-500 pl-4;
+}
+
+.quote-small {
+  @apply font-text-md text-neutral-600 italic border-l-4 border-primary-500 pl-4;
+}
+
+/* List styles */
+.list {
+  @apply space-y-2;
+}
+
+.list-item {
+  @apply font-text-md text-neutral-700;
+}
+
+.list-ordered {
+  @apply list-decimal list-inside space-y-2;
+}
+
+.list-unordered {
+  @apply list-disc list-inside space-y-2;
+}
+
+/* Text utilities */
+.text-balance {
+  text-wrap: balance;
+}
+
+.text-pretty {
+  text-wrap: pretty;
+}
+
+/* Responsive typography */
+@media (max-width: 640px) {
+  .heading-1 {
+    @apply font-display-xl;
+  }
+
+  .heading-2 {
+    @apply font-display-lg;
+  }
+
+  .heading-3 {
+    @apply font-display-md;
+  }
+
+  .heading-4 {
+    @apply font-display-sm;
+  }
+
+  .heading-5 {
+    @apply font-display-xs;
+  }
+
+  .heading-6 {
+    @apply font-text-lg;
+  }
+}
+
+/* Print styles */
+@media print {
+  .heading-1,
+  .heading-2,
+  .heading-3,
+  .heading-4,
+  .heading-5,
+  .heading-6 {
+    color: black !important;
+  }
+
+  .body-large,
+  .body-medium,
+  .body-small {
+    color: black !important;
+  }
+
+  .link {
+    color: black !important;
+    text-decoration: underline;
+  }
+}

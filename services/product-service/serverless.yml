@@ -54,7 +54,29 @@ functions:
       - http:
           path: /api/v1/categories
           method: GET
-          cors: true
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Requested-With
+            allowCredentials: false
+      - http:
+          path: /api/v1/categories
+          method: OPTIONS
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Requested-With
+            allowCredentials: false
 
   categories_get:
     handler: handlers/categories_get.lambda_handler
