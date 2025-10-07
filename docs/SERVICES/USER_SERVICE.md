@@ -373,3 +373,4 @@ serverless invoke local --function auth_register --data '{
 ---
 
 **Gamarriando User Service** - Gestión Segura de Usuarios y Autenticación 🔐
+

@@ -375,3 +375,4 @@ curl -I http://gamarriando-web-dev.s3-website-us-east-1.amazonaws.com
 
 **Infraestructura AWS Configurada** ✅  
 *Sistema completo desplegado y funcionando*
+

@@ -209,3 +209,4 @@ Estado actual del desarrollo del marketplace de streetwear peruano Gamarriando.
 
 **Última actualización**: Octubre 2024  
 **Próxima revisión**: Noviembre 2024
+

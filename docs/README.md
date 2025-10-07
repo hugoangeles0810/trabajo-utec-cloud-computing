@@ -87,3 +87,4 @@ Bienvenido a la documentación completa del proyecto Gamarriando, un marketplace
 **Última actualización**: Octubre 2024  
 **Versión**: 1.0.0  
 **Mantenido por**: Equipo Gamarriando
+
