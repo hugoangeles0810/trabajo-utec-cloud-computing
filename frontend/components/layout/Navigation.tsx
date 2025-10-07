@@ -184,18 +184,18 @@ export function Navigation({ categories = [], className }: NavigationProps) {
 
   return (
     <nav className={cn('bg-white border-b border-gray-200', className)}>
-      <div className="container mx-auto px-4">
-        <div className="flex items-center space-x-8">
+      <div className="container mx-auto px-3 sm:px-4">
+        <div className="flex items-center space-x-4 sm:space-x-8">
           {/* Categories */}
           <div className="relative" ref={categoriesDropdownRef}>
             <button 
-              className="flex items-center space-x-1 py-4 text-gray-700 hover:text-primary-600 font-medium transition-colors"
+              className="flex items-center space-x-1 py-3 sm:py-4 text-gray-700 hover:text-primary-600 font-medium transition-colors text-sm sm:text-base"
               onClick={() => setIsCategoriesDropdownOpen(!isCategoriesDropdownOpen)}
               onMouseEnter={() => setIsCategoriesDropdownOpen(true)}
             >
               <span>Categorías</span>
               <ChevronDownIcon className={cn(
-                "h-4 w-4 transition-transform duration-200",
+                "h-3 w-3 sm:h-4 sm:w-4 transition-transform duration-200",
                 isCategoriesDropdownOpen && "rotate-180"
               )} />
             </button>
@@ -203,13 +203,13 @@ export function Navigation({ categories = [], className }: NavigationProps) {
             {/* Categories Dropdown */}
             {isCategoriesDropdownOpen && (
               <div 
-                className="absolute top-full left-0 mt-1 w-96 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
+                className="absolute top-full left-0 mt-1 w-80 sm:w-96 bg-white border border-gray-200 rounded-lg shadow-lg z-50"
                 onMouseEnter={() => setIsCategoriesDropdownOpen(true)}
                 onMouseLeave={() => setIsCategoriesDropdownOpen(false)}
               >
-                <div className="p-4">
-                  <h3 className="font-semibold text-gray-900 mb-3">Explora nuestras categorías</h3>
-                  <div className="grid grid-cols-2 gap-3">
+                <div className="p-3 sm:p-4">
+                  <h3 className="font-semibold text-gray-900 mb-3 text-sm sm:text-base">Explora nuestras categorías</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
                     {displayCategories.map((category) => (
                       <Link
                         key={category.id}
@@ -218,7 +218,7 @@ export function Navigation({ categories = [], className }: NavigationProps) {
                         onClick={() => setIsCategoriesDropdownOpen(false)}
                       >
                         <div className="flex-1">
-                          <span className="text-sm font-medium text-gray-900 group-hover:text-primary-600">
+                          <span className="text-xs sm:text-sm font-medium text-gray-900 group-hover:text-primary-600">
                             {category.name}
                           </span>
                           {category.product_count && (
@@ -227,7 +227,7 @@ export function Navigation({ categories = [], className }: NavigationProps) {
                             </span>
                           )}
                         </div>
-                        <ChevronRightIcon className="h-4 w-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <ChevronRightIcon className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                       </Link>
                     ))}
                   </div>
@@ -288,13 +288,13 @@ export function Navigation({ categories = [], className }: NavigationProps) {
 
         {/* Mobile Navigation */}
         <div className="lg:hidden">
-          <div className="flex items-center justify-between py-4 border-t border-gray-100">
-            <div className="flex items-center space-x-4 overflow-x-auto">
+          <div className="flex items-center justify-between py-3 sm:py-4 border-t border-gray-100">
+            <div className="flex items-center space-x-2 sm:space-x-4 overflow-x-auto scrollbar-hide">
               {displayCategories.slice(0, 4).map((category) => (
                 <Link
                   key={category.id}
                   href={`/categoria/${category.slug}`}
-                  className="flex-shrink-0 px-3 py-2 text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md transition-colors"
+                  className="flex-shrink-0 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-gray-700 hover:text-primary-600 hover:bg-gray-50 rounded-md transition-colors whitespace-nowrap"
                 >
                   {category.name}
                 </Link>
@@ -302,7 +302,7 @@ export function Navigation({ categories = [], className }: NavigationProps) {
             </div>
             <Link
               href="/ofertas"
-              className="flex-shrink-0 px-3 py-2 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors"
+              className="flex-shrink-0 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors whitespace-nowrap"
             >
               🔥 Ofertas
             </Link>

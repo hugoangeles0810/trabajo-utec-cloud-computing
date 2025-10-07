@@ -957,4 +957,309 @@ a {
   .mobile-cart-drawer-closed {
     @apply translate-x-full;
   }
+
+  /* Hide scrollbar for mobile navigation */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Responsive line clamp utilities */
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+
+  /* Responsive aspect ratio utilities */
+  .aspect-square {
+    aspect-ratio: 1 / 1;
+  }
+
+  .aspect-video {
+    aspect-ratio: 16 / 9;
+  }
+
+  .aspect-4-3 {
+    aspect-ratio: 4 / 3;
+  }
+
+  .aspect-3-2 {
+    aspect-ratio: 3 / 2;
+  }
+
+  /* Responsive touch targets */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  .touch-target-sm {
+    @apply min-h-[36px] min-w-[36px];
+  }
+
+  .touch-target-lg {
+    @apply min-h-[48px] min-w-[48px];
+  }
+
+  /* Responsive safe areas */
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-area-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  .safe-area-all {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Responsive container queries (when supported) */
+  @container (min-width: 320px) {
+    .container-sm {
+      @apply text-sm;
+    }
+  }
+
+  @container (min-width: 640px) {
+    .container-md {
+      @apply text-base;
+    }
+  }
+
+  @container (min-width: 1024px) {
+    .container-lg {
+      @apply text-lg;
+    }
+  }
+
+  /* Responsive text truncation */
+  .truncate-responsive {
+    @apply truncate sm:whitespace-normal;
+  }
+
+  /* Responsive visibility */
+  .visible-xs {
+    @apply block;
+  }
+
+  .visible-sm {
+    @apply hidden sm:block;
+  }
+
+  .visible-md {
+    @apply hidden md:block;
+  }
+
+  .visible-lg {
+    @apply hidden lg:block;
+  }
+
+  .visible-xl {
+    @apply hidden xl:block;
+  }
+
+  .visible-2xl {
+    @apply hidden 2xl:block;
+  }
+
+  /* Responsive opacity */
+  .opacity-responsive {
+    @apply opacity-100 sm:opacity-90 lg:opacity-100;
+  }
+
+  /* Responsive transforms */
+  .transform-responsive {
+    @apply transform sm:scale-105 lg:scale-100;
+  }
+
+  /* Responsive filters */
+  .filter-responsive {
+    @apply filter-none sm:filter-blur-sm lg:filter-none;
+  }
+
+  /* Responsive backdrop */
+  .backdrop-responsive {
+    @apply backdrop-blur-none sm:backdrop-blur-sm lg:backdrop-blur-none;
+  }
+
+  /* Responsive mix blend modes */
+  .blend-responsive {
+    @apply mix-blend-normal sm:mix-blend-multiply lg:mix-blend-normal;
+  }
+
+  /* Responsive isolation */
+  .isolation-responsive {
+    @apply isolation-auto sm:isolation-isolate lg:isolation-auto;
+  }
+
+  /* Responsive object fit */
+  .object-fit-responsive {
+    @apply object-cover sm:object-contain lg:object-cover;
+  }
+
+  /* Responsive object position */
+  .object-position-responsive {
+    @apply object-center sm:object-top lg:object-center;
+  }
+
+  /* Responsive overflow */
+  .overflow-responsive {
+    @apply overflow-hidden sm:overflow-visible lg:overflow-hidden;
+  }
+
+  /* Responsive clip path */
+  .clip-path-responsive {
+    @apply clip-path-none sm:clip-path-circle lg:clip-path-none;
+  }
+
+  /* Responsive mask */
+  .mask-responsive {
+    @apply mask-none sm:mask-gradient lg:mask-none;
+  }
+
+  /* Responsive will change */
+  .will-change-responsive {
+    @apply will-change-auto sm:will-change-transform lg:will-change-auto;
+  }
+
+  /* Responsive contain */
+  .contain-responsive {
+    @apply contain-none sm:contain-layout lg:contain-none;
+  }
+
+  /* Responsive content visibility */
+  .content-visibility-responsive {
+    @apply content-visibility-auto sm:content-visibility-hidden lg:content-visibility-auto;
+  }
+
+  /* Responsive scroll behavior */
+  .scroll-behavior-responsive {
+    @apply scroll-smooth sm:scroll-auto lg:scroll-smooth;
+  }
+
+  /* Responsive scroll snap */
+  .scroll-snap-responsive {
+    @apply scroll-snap-none sm:scroll-snap-x lg:scroll-snap-none;
+  }
+
+  /* Responsive scroll padding */
+  .scroll-padding-responsive {
+    @apply scroll-p-0 sm:scroll-p-4 lg:scroll-p-0;
+  }
+
+  /* Responsive scroll margin */
+  .scroll-margin-responsive {
+    @apply scroll-m-0 sm:scroll-m-4 lg:scroll-m-0;
+  }
+
+  /* Responsive scroll align */
+  .scroll-align-responsive {
+    @apply scroll-align-start sm:scroll-align-center lg:scroll-align-start;
+  }
+
+  /* Responsive scroll stop */
+  .scroll-stop-responsive {
+    @apply scroll-stop-normal sm:scroll-stop-always lg:scroll-stop-normal;
+  }
+
+  /* Responsive scroll timeline */
+  .scroll-timeline-responsive {
+    @apply scroll-timeline-none sm:scroll-timeline-auto lg:scroll-timeline-none;
+  }
+
+  /* Responsive scroll range */
+  .scroll-range-responsive {
+    @apply scroll-range-none sm:scroll-range-normal lg:scroll-range-none;
+  }
+
+  /* Responsive scroll range start */
+  .scroll-range-start-responsive {
+    @apply scroll-range-start-0 sm:scroll-range-start-50 lg:scroll-range-start-0;
+  }
+
+  /* Responsive scroll range end */
+  .scroll-range-end-responsive {
+    @apply scroll-range-end-100 sm:scroll-range-end-50 lg:scroll-range-end-100;
+  }
+
+  /* Responsive scroll range name */
+  .scroll-range-name-responsive {
+    @apply scroll-range-name-none sm:scroll-range-name-scroll lg:scroll-range-name-none;
+  }
+
+  /* Responsive scroll range inset */
+  .scroll-range-inset-responsive {
+    @apply scroll-range-inset-0 sm:scroll-range-inset-10 lg:scroll-range-inset-0;
+  }
+
+  /* Responsive scroll range inset start */
+  .scroll-range-inset-start-responsive {
+    @apply scroll-range-inset-start-0 sm:scroll-range-inset-start-10 lg:scroll-range-inset-start-0;
+  }
+
+  /* Responsive scroll range inset end */
+  .scroll-range-inset-end-responsive {
+    @apply scroll-range-inset-end-0 sm:scroll-range-inset-end-10 lg:scroll-range-inset-end-0;
+  }
+
+  /* Responsive scroll range inset block */
+  .scroll-range-inset-block-responsive {
+    @apply scroll-range-inset-block-0 sm:scroll-range-inset-block-10 lg:scroll-range-inset-block-0;
+  }
+
+  /* Responsive scroll range inset inline */
+  .scroll-range-inset-inline-responsive {
+    @apply scroll-range-inset-inline-0 sm:scroll-range-inset-inline-10 lg:scroll-range-inset-inline-0;
+  }
+
+  /* Responsive scroll range inset block start */
+  .scroll-range-inset-block-start-responsive {
+    @apply scroll-range-inset-block-start-0 sm:scroll-range-inset-block-start-10 lg:scroll-range-inset-block-start-0;
+  }
+
+  /* Responsive scroll range inset block end */
+  .scroll-range-inset-block-end-responsive {
+    @apply scroll-range-inset-block-end-0 sm:scroll-range-inset-block-end-10 lg:scroll-range-inset-block-end-0;
+  }
+
+  /* Responsive scroll range inset inline start */
+  .scroll-range-inset-inline-start-responsive {
+    @apply scroll-range-inset-inline-start-0 sm:scroll-range-inset-inline-start-10 lg:scroll-range-inset-inline-start-0;
+  }
+
+  /* Responsive scroll range inset inline end */
+  .scroll-range-inset-inline-end-responsive {
+    @apply scroll-range-inset-inline-end-0 sm:scroll-range-inset-inline-end-10 lg:scroll-range-inset-inline-end-0;
+  }
 }

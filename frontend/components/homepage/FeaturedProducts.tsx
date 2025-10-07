@@ -410,15 +410,15 @@ export function FeaturedProducts({
   }
 
   return (
-    <section className={cn('py-16 bg-white', className)}>
-      <div className="container mx-auto px-4">
+    <section className={cn('py-12 sm:py-16 bg-white', className)}>
+      <div className="container mx-auto px-3 sm:px-4">
         {/* Header */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-12">
-          <div className="mb-6 lg:mb-0">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8 sm:mb-12">
+          <div className="mb-4 sm:mb-6 lg:mb-0">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
               {title}
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl">
+            <p className="text-base sm:text-lg text-gray-600 max-w-2xl">
               {subtitle}
             </p>
           </div>
@@ -427,7 +427,7 @@ export function FeaturedProducts({
             <Link href="/productos?sort=best-selling">
               <Button
                 variant="outline"
-                className="border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white"
+                className="border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-2.5"
               >
                 Ver Todos los Productos
               </Button>
@@ -438,7 +438,7 @@ export function FeaturedProducts({
         {/* Products Carousel */}
         <div className="relative">
           {/* Products Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
             {visibleProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -447,22 +447,22 @@ export function FeaturedProducts({
           {/* Navigation Arrows */}
           <button
             onClick={goToPrevious}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 bg-white shadow-lg hover:shadow-xl text-gray-600 hover:text-primary-600 p-3 rounded-full transition-all duration-200"
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-2 sm:-translate-x-4 bg-white shadow-lg hover:shadow-xl text-gray-600 hover:text-primary-600 p-2 sm:p-3 rounded-full transition-all duration-200"
             aria-label="Productos anteriores"
           >
-            <ChevronLeftIcon className="h-6 w-6" />
+            <ChevronLeftIcon className="h-4 w-4 sm:h-6 sm:w-6" />
           </button>
 
           <button
             onClick={goToNext}
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 bg-white shadow-lg hover:shadow-xl text-gray-600 hover:text-primary-600 p-3 rounded-full transition-all duration-200"
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-2 sm:translate-x-4 bg-white shadow-lg hover:shadow-xl text-gray-600 hover:text-primary-600 p-2 sm:p-3 rounded-full transition-all duration-200"
             aria-label="Productos siguientes"
           >
-            <ChevronRightIcon className="h-6 w-6" />
+            <ChevronRightIcon className="h-4 w-4 sm:h-6 sm:w-6" />
           </button>
 
           {/* Dots Indicator */}
-          <div className="flex justify-center space-x-2 mt-8">
+          <div className="flex justify-center space-x-1.5 sm:space-x-2 mt-6 sm:mt-8">
             {[...Array(totalSlides)].map((_, index) => (
               <button
                 key={index}
@@ -471,7 +471,7 @@ export function FeaturedProducts({
                   setIsPlaying(false);
                 }}
                 className={cn(
-                  'w-3 h-3 rounded-full transition-all duration-200',
+                  'w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-all duration-200',
                   index === currentIndex
                     ? 'bg-primary-600 scale-110'
                     : 'bg-gray-300 hover:bg-gray-400'
@@ -483,25 +483,25 @@ export function FeaturedProducts({
         </div>
 
         {/* Stats Section */}
-        <div className="mt-16 bg-gray-50 rounded-2xl p-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+        <div className="mt-12 sm:mt-16 bg-gray-50 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 text-center">
             <div>
-              <div className="text-3xl font-bold text-primary-600 mb-2">
+              <div className="text-2xl sm:text-3xl font-bold text-primary-600 mb-1 sm:mb-2">
                 {products.length}+
               </div>
-              <div className="text-gray-600">Productos Destacados</div>
+              <div className="text-sm sm:text-base text-gray-600">Productos Destacados</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-primary-600 mb-2">
+              <div className="text-2xl sm:text-3xl font-bold text-primary-600 mb-1 sm:mb-2">
                 4.7★
               </div>
-              <div className="text-gray-600">Calificación Promedio</div>
+              <div className="text-sm sm:text-base text-gray-600">Calificación Promedio</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-primary-600 mb-2">
+              <div className="text-2xl sm:text-3xl font-bold text-primary-600 mb-1 sm:mb-2">
                 1000+
               </div>
-              <div className="text-gray-600">Clientes Satisfechos</div>
+              <div className="text-sm sm:text-base text-gray-600">Clientes Satisfechos</div>
             </div>
           </div>
         </div>

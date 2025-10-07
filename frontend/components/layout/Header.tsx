@@ -34,18 +34,18 @@ export function Header({ className }: HeaderProps) {
   return (
     <header className={cn('bg-white shadow-sm border-b border-gray-200', className)}>
       {/* Top Bar */}
-      <div className="bg-primary-600 text-white py-2">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center space-x-4">
-              <span>🚚 Envío gratis en pedidos desde S/ 50</span>
-              <span className="hidden sm:inline">📞 +51 999 999 999</span>
+      <div className="bg-primary-600 text-white py-1.5 sm:py-2">
+        <div className="container mx-auto px-3 sm:px-4">
+          <div className="flex items-center justify-between text-xs sm:text-sm">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <span className="truncate">🚚 Envío gratis desde S/ 50</span>
+              <span className="hidden xs:inline">📞 +51 999 999 999</span>
             </div>
-            <div className="flex items-center space-x-4">
-              <Link href="/ayuda" className="hover:text-yellow-300 transition-colors">
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <Link href="/ayuda" className="hover:text-yellow-300 transition-colors text-xs sm:text-sm">
                 Ayuda
               </Link>
-              <Link href="/siguenos" className="hover:text-yellow-300 transition-colors">
+              <Link href="/siguenos" className="hover:text-yellow-300 transition-colors text-xs sm:text-sm">
                 Síguenos
               </Link>
             </div>
@@ -54,24 +54,24 @@ export function Header({ className }: HeaderProps) {
       </div>
 
       {/* Main Header */}
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">G</span>
+          <Link href="/" className="flex items-center space-x-2 flex-shrink-0">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-lg sm:text-xl">G</span>
             </div>
-            <div className="hidden sm:block">
-              <h1 className="text-2xl font-bold text-gray-900">Gamarriando</h1>
-              <p className="text-xs text-gray-500 -mt-1">Tu marketplace favorito</p>
+            <div className="hidden xs:block">
+              <h1 className="text-lg sm:text-2xl font-bold text-gray-900">Gamarriando</h1>
+              <p className="text-xs text-gray-500 -mt-1 hidden sm:block">Tu marketplace favorito</p>
             </div>
           </Link>
 
           {/* Search Bar */}
-          <div className="flex-1 max-w-2xl mx-8 hidden md:block">
+          <div className="flex-1 max-w-2xl mx-4 sm:mx-8 hidden md:block">
             <form onSubmit={handleSearch} className="relative">
               <div className="relative">
-                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
                 <Input
                   type="text"
                   placeholder="Buscar productos, marcas, categorías..."
@@ -80,7 +80,7 @@ export function Header({ className }: HeaderProps) {
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setIsSearchFocused(false)}
                   className={cn(
-                    'pl-10 pr-4 py-3 border-2 transition-all duration-200',
+                    'pl-8 sm:pl-10 pr-4 py-2 sm:py-3 border-2 transition-all duration-200 text-sm sm:text-base',
                     isSearchFocused
                       ? 'border-primary-500 shadow-lg'
                       : 'border-gray-300 hover:border-gray-400'
@@ -88,7 +88,7 @@ export function Header({ className }: HeaderProps) {
                 />
                 <Button
                   type="submit"
-                  className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-primary-600 hover:bg-primary-700 px-4 py-2"
+                  className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-primary-600 hover:bg-primary-700 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm"
                 >
                   Buscar
                 </Button>
@@ -97,7 +97,7 @@ export function Header({ className }: HeaderProps) {
           </div>
 
           {/* Right Side Actions */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
             {/* User Menu */}
             <div className="hidden lg:flex items-center space-x-2">
               <Button variant="outline" size="sm" className="flex items-center space-x-2">
@@ -114,33 +114,33 @@ export function Header({ className }: HeaderProps) {
               variant="outline"
               size="sm"
               onClick={toggleMobileMenu}
-              className="lg:hidden"
+              className="lg:hidden p-2"
               aria-label="Toggle mobile menu"
             >
               {isMobileMenuOpen ? (
-                <XMarkIcon className="h-5 w-5" />
+                <XMarkIcon className="h-4 w-4 sm:h-5 sm:w-5" />
               ) : (
-                <Bars3Icon className="h-5 w-5" />
+                <Bars3Icon className="h-4 w-4 sm:h-5 sm:w-5" />
               )}
             </Button>
           </div>
         </div>
 
         {/* Mobile Search Bar */}
-        <div className="md:hidden mt-4">
+        <div className="md:hidden mt-3 sm:mt-4">
           <form onSubmit={handleSearch} className="relative">
             <div className="relative">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
               <Input
                 type="text"
                 placeholder="Buscar productos..."
                 value={searchQuery}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 border-2 border-gray-300"
+                className="pl-9 sm:pl-10 pr-4 py-2 sm:py-2.5 border-2 border-gray-300 text-sm sm:text-base"
               />
               <Button
                 type="submit"
-                className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-primary-600 hover:bg-primary-700 px-3 py-1 text-sm"
+                className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-primary-600 hover:bg-primary-700 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm"
               >
                 Buscar
               </Button>
@@ -155,49 +155,49 @@ export function Header({ className }: HeaderProps) {
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div className="lg:hidden fixed inset-0 z-50 bg-black bg-opacity-50" onClick={toggleMobileMenu}>
-          <div className="bg-white w-80 h-full shadow-xl" onClick={(e) => e.stopPropagation()}>
-            <div className="p-4 border-b border-gray-200">
+          <div className="bg-white w-72 sm:w-80 h-full shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <div className="p-3 sm:p-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">Menú</h2>
-                <Button variant="outline" size="sm" onClick={toggleMobileMenu}>
-                  <XMarkIcon className="h-5 w-5" />
+                <h2 className="text-base sm:text-lg font-semibold text-gray-900">Menú</h2>
+                <Button variant="outline" size="sm" onClick={toggleMobileMenu} className="p-2">
+                  <XMarkIcon className="h-4 w-4 sm:h-5 sm:w-5" />
                 </Button>
               </div>
             </div>
             
-            <nav className="p-4">
-              <div className="space-y-4">
+            <nav className="p-3 sm:p-4">
+              <div className="space-y-3 sm:space-y-4">
                 <Link
                   href="/categorias"
-                  className="block text-gray-700 hover:text-primary-600 font-medium transition-colors"
+                  className="block text-gray-700 hover:text-primary-600 font-medium transition-colors text-sm sm:text-base"
                   onClick={toggleMobileMenu}
                 >
                   Categorías
                 </Link>
                 <Link
                   href="/ofertas"
-                  className="block text-gray-700 hover:text-primary-600 font-medium transition-colors"
+                  className="block text-gray-700 hover:text-primary-600 font-medium transition-colors text-sm sm:text-base"
                   onClick={toggleMobileMenu}
                 >
                   Ofertas
                 </Link>
                 <Link
                   href="/nuevos"
-                  className="block text-gray-700 hover:text-primary-600 font-medium transition-colors"
+                  className="block text-gray-700 hover:text-primary-600 font-medium transition-colors text-sm sm:text-base"
                   onClick={toggleMobileMenu}
                 >
                   Nuevos
                 </Link>
                 <Link
                   href="/marcas"
-                  className="block text-gray-700 hover:text-primary-600 font-medium transition-colors"
+                  className="block text-gray-700 hover:text-primary-600 font-medium transition-colors text-sm sm:text-base"
                   onClick={toggleMobileMenu}
                 >
                   Marcas
                 </Link>
                 <Link
                   href="/contacto"
-                  className="block text-gray-700 hover:text-primary-600 font-medium transition-colors"
+                  className="block text-gray-700 hover:text-primary-600 font-medium transition-colors text-sm sm:text-base"
                   onClick={toggleMobileMenu}
                 >
                   Contacto

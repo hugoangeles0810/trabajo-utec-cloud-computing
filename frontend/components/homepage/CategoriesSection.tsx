@@ -196,14 +196,14 @@ export function CategoriesSection({
   }
 
   return (
-    <section className={cn('py-16 bg-gray-50', className)}>
-      <div className="container mx-auto px-4">
+    <section className={cn('py-12 sm:py-16 bg-gray-50', className)}>
+      <div className="container mx-auto px-3 sm:px-4">
         {/* Header */}
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        <div className="text-center mb-8 sm:mb-12">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
             {title}
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
+          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto mb-6 sm:mb-8">
             {subtitle}
           </p>
           
@@ -211,7 +211,7 @@ export function CategoriesSection({
             <Link href="/categorias">
               <Button
                 variant="outline"
-                className="border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white"
+                className="border-primary-600 text-primary-600 hover:bg-primary-600 hover:text-white text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-2.5"
               >
                 Ver Todas las Categorías
               </Button>
@@ -220,36 +220,36 @@ export function CategoriesSection({
         </div>
 
         {/* Categories Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {categories.map((category) => (
             <CategoryCard key={category.id} category={category} />
           ))}
         </div>
 
         {/* Featured Category Highlight */}
-        <div className="mt-12 bg-gradient-to-r from-primary-600 to-primary-800 rounded-2xl p-8 text-white">
-          <div className="flex flex-col lg:flex-row items-center gap-8">
-            <div className="flex-1">
-              <Badge className="bg-yellow-500 text-gray-900 mb-4">
+        <div className="mt-8 sm:mt-12 bg-gradient-to-r from-primary-600 to-primary-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 text-white">
+          <div className="flex flex-col lg:flex-row items-center gap-6 sm:gap-8">
+            <div className="flex-1 text-center lg:text-left">
+              <Badge className="bg-yellow-500 text-gray-900 mb-3 sm:mb-4 text-xs sm:text-sm">
                 Destacado
               </Badge>
-              <h3 className="text-2xl md:text-3xl font-bold mb-4">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-3 sm:mb-4">
                 ¡Nueva Colección EZZETA!
               </h3>
-              <p className="text-primary-100 mb-6 text-lg">
+              <p className="text-primary-100 mb-4 sm:mb-6 text-sm sm:text-base lg:text-lg">
                 Descubre los últimos diseños de la marca líder en streetwear gaming peruano. 
                 Calidad premium y estilo inigualable.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/categoria/ezzeta">
-                  <Button className="bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold px-6 py-3">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                <Link href="/categoria/ezzeta" className="flex-1 sm:flex-none">
+                  <Button className="w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-semibold px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base">
                     Ver Colección EZZETA
                   </Button>
                 </Link>
-                <Link href="/productos?marca=ezzeta">
+                <Link href="/productos?marca=ezzeta" className="flex-1 sm:flex-none">
                   <Button
                     variant="outline"
-                    className="border-white text-white hover:bg-white hover:text-gray-900 font-semibold px-6 py-3"
+                    className="w-full sm:w-auto border-white text-white hover:bg-white hover:text-gray-900 font-semibold px-4 sm:px-6 py-2.5 sm:py-3 text-sm sm:text-base"
                   >
                     Ver Todos los Productos
                   </Button>
@@ -260,12 +260,12 @@ export function CategoriesSection({
             <div className="flex-shrink-0">
               <div className="relative">
                 <div
-                  className="w-64 h-64 rounded-xl bg-cover bg-center shadow-2xl"
+                  className="w-48 h-48 sm:w-56 sm:h-56 lg:w-64 lg:h-64 rounded-lg sm:rounded-xl bg-cover bg-center shadow-2xl"
                   style={{
                     backgroundImage: `url(https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80)`,
                   }}
                 />
-                <div className="absolute -bottom-4 -right-4 bg-yellow-500 text-gray-900 px-4 py-2 rounded-full font-bold text-sm">
+                <div className="absolute -bottom-2 -right-2 sm:-bottom-4 sm:-right-4 bg-yellow-500 text-gray-900 px-2 sm:px-4 py-1 sm:py-2 rounded-full font-bold text-xs sm:text-sm">
                   +67 productos
                 </div>
               </div>

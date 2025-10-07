@@ -117,42 +117,42 @@ export function HeroSection({
 
         {/* Content */}
         <div className="relative h-full flex items-center">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-3 sm:px-4">
             <div className="max-w-2xl">
               {/* Badge */}
               {currentSlideData.badge && (
-                <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-600 text-white mb-4 hero-fade-in">
+                <div className="inline-flex items-center px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium bg-primary-600 text-white mb-3 sm:mb-4 hero-fade-in">
                   {currentSlideData.badge}
                 </div>
               )}
 
               {/* Title */}
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight hero-slide-up">
+              <h1 className="text-2xl xs:text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-3 sm:mb-4 leading-tight hero-slide-up">
                 {currentSlideData.title}
               </h1>
 
               {/* Subtitle */}
-              <h2 className="text-xl md:text-2xl lg:text-3xl font-semibold text-primary-300 mb-4 hero-slide-up hero-delay-200">
+              <h2 className="text-lg xs:text-xl sm:text-xl md:text-2xl lg:text-3xl font-semibold text-primary-300 mb-3 sm:mb-4 hero-slide-up hero-delay-200">
                 {currentSlideData.subtitle}
               </h2>
 
               {/* Description */}
-              <p className="text-lg text-gray-200 mb-8 leading-relaxed hero-slide-up hero-delay-400">
+              <p className="text-sm xs:text-base sm:text-lg text-gray-200 mb-6 sm:mb-8 leading-relaxed hero-slide-up hero-delay-400 max-w-xl">
                 {currentSlideData.description}
               </p>
 
               {/* CTA Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 hero-slide-up hero-delay-600">
-                <Link href={currentSlideData.ctaLink}>
-                  <Button className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-3 text-lg font-semibold">
+              <div className="flex flex-col xs:flex-row gap-3 sm:gap-4 hero-slide-up hero-delay-600">
+                <Link href={currentSlideData.ctaLink} className="flex-1 xs:flex-none">
+                  <Button className="w-full xs:w-auto bg-primary-600 hover:bg-primary-700 text-white px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 text-sm sm:text-base lg:text-lg font-semibold">
                     {currentSlideData.ctaText}
                   </Button>
                 </Link>
                 
-                <Link href="/productos">
+                <Link href="/productos" className="flex-1 xs:flex-none">
                   <Button
                     variant="outline"
-                    className="border-white text-white hover:bg-white hover:text-gray-900 px-8 py-3 text-lg font-semibold"
+                    className="w-full xs:w-auto border-white text-white hover:bg-white hover:text-gray-900 px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 text-sm sm:text-base lg:text-lg font-semibold"
                   >
                     Ver Todos los Productos
                   </Button>
@@ -165,38 +165,38 @@ export function HeroSection({
         {/* Navigation Arrows */}
         <button
           onClick={goToPrevious}
-          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-all duration-200 backdrop-blur-sm"
+          className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-1.5 sm:p-2 rounded-full transition-all duration-200 backdrop-blur-sm"
           aria-label="Slide anterior"
         >
-          <ChevronLeftIcon className="h-6 w-6" />
+          <ChevronLeftIcon className="h-4 w-4 sm:h-6 sm:w-6" />
         </button>
 
         <button
           onClick={goToNext}
-          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-all duration-200 backdrop-blur-sm"
+          className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-1.5 sm:p-2 rounded-full transition-all duration-200 backdrop-blur-sm"
           aria-label="Slide siguiente"
         >
-          <ChevronRightIcon className="h-6 w-6" />
+          <ChevronRightIcon className="h-4 w-4 sm:h-6 sm:w-6" />
         </button>
 
         {/* Play/Pause Button */}
         <button
           onClick={toggleAutoPlay}
-          className="absolute top-4 right-4 bg-white/20 hover:bg-white/30 text-white p-2 rounded-full transition-all duration-200 backdrop-blur-sm"
+          className="absolute top-2 sm:top-4 right-2 sm:right-4 bg-white/20 hover:bg-white/30 text-white p-1.5 sm:p-2 rounded-full transition-all duration-200 backdrop-blur-sm"
           aria-label={isPlaying ? 'Pausar carousel' : 'Reproducir carousel'}
         >
-          <PlayIcon className={cn('h-5 w-5', !isPlaying && 'ml-0.5')} />
+          <PlayIcon className={cn('h-4 w-4 sm:h-5 sm:w-5', !isPlaying && 'ml-0.5')} />
         </button>
       </div>
 
       {/* Slide Indicators */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+      <div className="absolute bottom-3 sm:bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-1.5 sm:space-x-2">
         {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => goToSlide(index)}
             className={cn(
-              'w-3 h-3 rounded-full transition-all duration-200',
+              'w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-all duration-200',
               index === currentSlide
                 ? 'bg-primary-500 scale-110'
                 : 'bg-white/50 hover:bg-white/70'

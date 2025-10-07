@@ -94,8 +94,9 @@ export function PromotionalBanner({
         <div className="absolute top-1/2 left-1/4 w-8 h-8 bg-white rounded-full opacity-10 animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
 
-      <div className="relative container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between">
+      <div className="relative container mx-auto px-3 sm:px-4 py-3 sm:py-4">
+        {/* Desktop Layout */}
+        <div className="hidden sm:flex items-center justify-between">
           {/* Main Content */}
           <div className="flex items-center space-x-4 flex-1">
             {/* Icon */}
@@ -107,7 +108,7 @@ export function PromotionalBanner({
 
             {/* Text Content */}
             <div className="flex-1 min-w-0">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-4 space-y-2 lg:space-y-0">
                 <div className="flex items-center space-x-2">
                   <SparklesIcon className="h-5 w-5 text-yellow-400 animate-spin" />
                   <h3 className="text-lg font-bold">
@@ -115,20 +116,20 @@ export function PromotionalBanner({
                   </h3>
                 </div>
                 
-                <div className="flex items-center space-x-2 text-sm">
-                  <span>Usa el cupón</span>
+                <div className="flex flex-col xs:flex-row xs:items-center space-y-1 xs:space-y-0 xs:space-x-2 text-sm">
+                  <span className="whitespace-nowrap">Usa el cupón</span>
                   <button
                     onClick={handleCopyCoupon}
-                    className="inline-flex items-center space-x-1 bg-yellow-500 hover:bg-yellow-600 text-gray-900 px-3 py-1 rounded-full font-bold transition-colors cursor-pointer group"
+                    className="inline-flex items-center space-x-1 bg-yellow-500 hover:bg-yellow-600 text-gray-900 px-3 py-1 rounded-full font-bold transition-colors cursor-pointer group w-fit"
                   >
                     <TagIcon className="h-4 w-4" />
                     <span>BIENVENIDO10</span>
                   </button>
-                  <span>y obtén 10% de descuento en tu primera compra</span>
+                  <span className="text-xs xs:text-sm">y obtén 10% de descuento</span>
                 </div>
               </div>
               
-              <p className="text-primary-100 text-sm mt-1">
+              <p className="text-primary-100 text-xs lg:text-sm mt-1">
                 Válido hasta el 31 de diciembre de 2024 • No acumulable con otras ofertas
               </p>
             </div>
@@ -138,7 +139,7 @@ export function PromotionalBanner({
           <div className="flex items-center space-x-3 flex-shrink-0">
             {/* Timer */}
             {autoClose && timeLeft > 0 && (
-              <div className="hidden sm:flex items-center space-x-2 text-sm">
+              <div className="hidden lg:flex items-center space-x-2 text-sm">
                 <span className="text-primary-200">Se cierra en:</span>
                 <div className="bg-white/20 px-2 py-1 rounded-full">
                   <span className="font-mono font-bold">{formatTime(timeLeft)}</span>
@@ -152,7 +153,7 @@ export function PromotionalBanner({
                 // TODO: Navigate to products page with coupon applied
                 console.log('Navigate to products with BIENVENIDO10 coupon');
               }}
-              className="bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold px-4 py-2 whitespace-nowrap"
+              className="bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold px-3 lg:px-4 py-2 text-sm lg:text-base whitespace-nowrap"
             >
               ¡Aprovechar Oferta!
             </Button>
@@ -169,20 +170,66 @@ export function PromotionalBanner({
         </div>
 
         {/* Mobile Layout */}
-        <div className="sm:hidden mt-3 pt-3 border-t border-white/20">
-          <div className="flex items-center justify-between">
-            <div className="text-sm">
-              <span className="text-primary-200">Se cierra en: </span>
-              <span className="font-mono font-bold">{formatTime(timeLeft)}</span>
+        <div className="sm:hidden">
+          {/* Top Row - Icon and Title */}
+          <div className="flex items-center justify-center space-x-3 mb-3">
+            <div className="flex-shrink-0">
+              <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center animate-pulse">
+                <GiftIcon className="h-4 w-4 text-gray-900" />
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <SparklesIcon className="h-4 w-4 text-yellow-400 animate-spin" />
+              <h3 className="text-base font-bold">
+                ¡Bienvenido a Gamarriando!
+              </h3>
             </div>
             <button
-              onClick={handleCopyCoupon}
-              className="inline-flex items-center space-x-1 bg-yellow-500 hover:bg-yellow-600 text-gray-900 px-3 py-1 rounded-full font-bold transition-colors"
+              onClick={handleClose}
+              className="absolute top-3 right-3 p-1 hover:bg-white/20 rounded-full transition-colors"
+              aria-label="Cerrar banner"
             >
-              <TagIcon className="h-4 w-4" />
-              <span>Copiar Cupón</span>
+              <XMarkIcon className="h-4 w-4" />
             </button>
           </div>
+
+          {/* Middle Row - Coupon */}
+          <div className="text-center mb-3">
+            <p className="text-sm text-primary-100 mb-2">
+              Usa el cupón y obtén 10% de descuento
+            </p>
+            <button
+              onClick={handleCopyCoupon}
+              className="inline-flex items-center space-x-1 bg-yellow-500 hover:bg-yellow-600 text-gray-900 px-4 py-2 rounded-full font-bold transition-colors text-sm"
+            >
+              <TagIcon className="h-3 w-3" />
+              <span>BIENVENIDO10</span>
+            </button>
+          </div>
+
+          {/* Bottom Row - Timer and CTA */}
+          <div className="flex flex-col items-center space-y-2 pt-2 border-t border-white/20">
+            {autoClose && timeLeft > 0 && (
+              <div className="text-xs text-center">
+                <span className="text-primary-200">Se cierra en: </span>
+                <span className="font-mono font-bold">{formatTime(timeLeft)}</span>
+              </div>
+            )}
+            <Button
+              onClick={() => {
+                // TODO: Navigate to products page with coupon applied
+                console.log('Navigate to products with BIENVENIDO10 coupon');
+              }}
+              className="bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold px-6 py-2.5 text-sm whitespace-nowrap"
+            >
+              ¡Aprovechar!
+            </Button>
+          </div>
+
+          {/* Terms */}
+          <p className="text-xs text-primary-200 mt-3 text-center">
+            Válido hasta el 31 de diciembre de 2024
+          </p>
         </div>
       </div>
 
