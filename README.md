@@ -49,7 +49,7 @@ gamarriando/
 ### Prerequisites
 
 - Node.js 18+
-- Python 3.11+
+- Python 3.9+
 - Docker & Docker Compose
 - AWS CLI (for deployment)
 
